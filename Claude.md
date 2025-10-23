@@ -1,4 +1,4 @@
-# Web Tools Repository - Claude Instructions
+# Pocket Tools 🔧 - Claude Instructions
 
 ## Project Overview
 This is a simple repository for building small, self-contained web tools. Each tool is a single HTML file with inline CSS and JavaScript - no build process, no dependencies, just open and use.
@@ -12,25 +12,24 @@ This is a simple repository for building small, self-contained web tools. Each t
 
 ## Repository Structure
 ```
-tools/
+/
 ├── README.md                    # Main documentation with tool list
 ├── index.html                   # Auto-generated landing page
 ├── generate-index.py            # Python generator script
 ├── Claude.md                    # This file - instructions for Claude Code
 ├── .gitignore
-└── tools/
-    └── [tool-name]/
-        ├── index.html           # Self-contained tool
-        └── README.md            # Tool metadata and description
+└── [tool-name]/                 # Each tool is a folder at root level
+    ├── index.html               # Self-contained tool
+    └── README.md                # Tool metadata and description
 ```
 
 ## Workflow for Adding New Tools
 
 When asked to create a new tool, follow these steps:
 
-1. **Create tool directory**: `tools/[tool-name]/`
+1. **Create tool directory**: `[tool-name]/` at the root level
 
-2. **Create tool README**: `tools/[tool-name]/README.md` with:
+2. **Create tool README**: `[tool-name]/README.md` with:
    ```markdown
    # Tool Name
 
@@ -50,13 +49,13 @@ When asked to create a new tool, follow these steps:
    How to use the tool.
    ```
 
-3. **Create single HTML file**: `tools/[tool-name]/index.html`
+3. **Create single HTML file**: `[tool-name]/index.html`
    - Complete HTML5 document
    - All CSS inline in `<style>` tags
    - All JavaScript inline in `<script>` tags
    - Clean, modern design following color palette
    - Mobile-responsive
-   - Include a "← Back to all tools" link to `../../index.html`
+   - Include a "← Back to all tools" link to `/` (root)
 
 4. **Regenerate index.html**: Run `python generate-index.py`
    - This automatically discovers all tools with README.md files
@@ -200,19 +199,21 @@ A brief description (1-2 sentences) that will appear on the main index page.
 Instructions on how to use the tool.
 ```
 
-The generator script automatically scans the `tools/` directory and extracts this information.
+The generator script automatically scans the root directory for tool folders (those with both `index.html` and `README.md`) and extracts this information.
 
 ## Notes
 - The index.html is auto-generated - NEVER edit it manually
 - Always regenerate index.html after adding or updating tools
 - Each tool needs its own README.md with metadata (category, created, updated)
 - The generator automatically discovers tools - no manual registration needed
+- Tools are accessible at `/<folder-name>/` (the folder name becomes the slug)
+- Use kebab-case for folder names (e.g., `word-counter`, `color-picker`)
 - Keep tools simple and focused on one task
 - Prioritize user experience and accessibility
 - Test thoroughly before committing
 
 ## When in Doubt
-- Check the example-tool for reference
+- Check the counter tool for reference
 - Keep it simple - KISS principle
 - Ask for clarification if requirements are unclear
 - Focus on making tools useful and easy to use

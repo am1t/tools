@@ -67,28 +67,32 @@ def parse_tool_readme(tool_path):
 def find_tools():
     """Find all tool directories and extract their information"""
     tools = []
-    tools_dir = 'tools'
 
-    if not os.path.exists(tools_dir):
-        return tools
+    # Exclude these directories from tool scanning
+    exclude_dirs = {'.git', '.github', 'node_modules', '__pycache__', '.vscode', '.idea'}
 
-    # Iterate through subdirectories in tools/
-    for item in sorted(os.listdir(tools_dir)):
-        tool_path = os.path.join(tools_dir, item)
-
-        # Skip if not a directory
-        if not os.path.isdir(tool_path):
+    # Scan current directory for tool directories
+    for item in sorted(os.listdir('.')):
+        # Skip files, hidden dirs, and excluded dirs
+        if not os.path.isdir(item) or item.startswith('.') or item in exclude_dirs:
             continue
 
-        # Check if index.html exists
-        if not os.path.exists(os.path.join(tool_path, 'index.html')):
+        tool_path = item
+
+        # Check if this directory has both index.html AND README.md (tool markers)
+        has_index = os.path.exists(os.path.join(tool_path, 'index.html'))
+        has_readme = os.path.exists(os.path.join(tool_path, 'README.md'))
+
+        if not (has_index and has_readme):
             continue
 
         # Parse the tool's README
         tool_info = parse_tool_readme(tool_path)
 
         if tool_info:
-            tool_info['path'] = f'{tools_dir}/{item}/'
+            # Use folder name as slug, path is just /{slug}/
+            tool_info['slug'] = item
+            tool_info['path'] = f'/{item}/'
             tools.append(tool_info)
 
     return tools

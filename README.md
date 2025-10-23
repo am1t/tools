@@ -1,4 +1,4 @@
-# Web Tools Collection
+# Pocket Tools 🔧
 
 A collection of simple, self-contained web tools. Each tool is a single HTML file with no external dependencies.
 
@@ -12,39 +12,40 @@ A collection of simple, self-contained web tools. Each tool is a single HTML fil
 
 ## Available Tools
 
-Tools are automatically discovered from the `tools/` directory. Each tool must have:
+Tools are automatically discovered from the root directory. Each tool must have:
 - An `index.html` file (the tool itself)
 - A `README.md` file with metadata (category, created date, updated date) and description
 
+Each tool is a folder at the root level and accessible at `/<folder-name>/` (e.g., `/counter/`)
+
 Current tools:
-- **Example Tool** - `tools/example-tool/` - Demo tool showing the pattern
+- **Counter** - `/counter/` - Simple counting tool with keyboard shortcuts
 
 ## Adding New Tools
 
-1. Create a new directory under `tools/` with a descriptive name (use kebab-case)
+1. Create a new directory at the root level with a descriptive name (use kebab-case)
 2. Create an `index.html` file in that directory (the tool itself)
 3. Create a `README.md` file in that directory with:
    - Tool name as h1 (`# Tool Name`)
    - Metadata section with category, created date, and updated date
    - Description section
    - Any additional sections (Features, Usage, etc.)
-4. Follow the self-contained pattern (see `tools/example-tool/`)
+4. Follow the self-contained pattern (see `counter/` for reference)
 5. Run `python generate-index.py` to update the main index page
 
-See `tools/example-tool/README.md` for the required format.
+See `counter/README.md` for the required format.
 
 ## Structure
 
 ```
-tools/
+/
 ├── README.md                    # This file (project overview)
 ├── index.html                   # Auto-generated landing page
 ├── generate-index.py            # Script to generate index.html
 ├── Claude.md                    # Instructions for Claude Code
-└── tools/
-    └── example-tool/
-        ├── index.html          # Self-contained tool
-        └── README.md           # Tool metadata and description
+└── counter/                     # Each tool is a folder at root level
+    ├── index.html              # Self-contained tool
+    └── README.md               # Tool metadata and description
 ```
 
 ## Building
@@ -55,7 +56,7 @@ To regenerate the landing page:
 python generate-index.py
 ```
 
-This will scan the `tools/` directory, read each tool's `README.md` file, and generate a new `index.html` with links to all tools.
+This will scan the root directory for tool folders (those with both `index.html` and `README.md`), and generate a new `index.html` with links to all tools.
 
 ## License
 
