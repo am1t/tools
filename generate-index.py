@@ -258,7 +258,7 @@ def generate_html(tools):
 <body>
     <div class="container">
         <header>
-            <h1>{{ tools.amitgawande }}</h1>
+            <h1>{{ pocket.tools }}</h1>
             <p class="subtitle">Simple, self-contained web tools</p>
         </header>
 
