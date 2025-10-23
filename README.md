@@ -57,7 +57,3 @@ python generate-index.py
 ```
 
 This will scan the root directory for tool folders (those with both `index.html` and `README.md`), and generate a new `index.html` with links to all tools.
-
-## License
-
-Public Domain - do whatever you want with these tools.
