@@ -16,12 +16,12 @@ tools/
 ├── README.md                    # Main documentation with tool list
 ├── index.html                   # Auto-generated landing page
 ├── generate-index.py            # Python generator script
-├── generate-index.js            # Node.js generator script
 ├── Claude.md                    # This file - instructions for Claude Code
 ├── .gitignore
 └── tools/
     └── [tool-name]/
-        └── index.html           # Self-contained tool
+        ├── index.html           # Self-contained tool
+        └── README.md            # Tool metadata and description
 ```
 
 ## Workflow for Adding New Tools
@@ -29,20 +29,40 @@ tools/
 When asked to create a new tool, follow these steps:
 
 1. **Create tool directory**: `tools/[tool-name]/`
-2. **Create single HTML file**: `tools/[tool-name]/index.html`
-3. **Tool file requirements**:
+
+2. **Create tool README**: `tools/[tool-name]/README.md` with:
+   ```markdown
+   # Tool Name
+
+   ## Metadata
+   - **Category**: [Category Name]
+   - **Created**: YYYY-MM-DD
+   - **Updated**: YYYY-MM-DD
+
+   ## Description
+   Brief description of what the tool does.
+
+   ## Features
+   - Feature 1
+   - Feature 2
+
+   ## Usage
+   How to use the tool.
+   ```
+
+3. **Create single HTML file**: `tools/[tool-name]/index.html`
    - Complete HTML5 document
    - All CSS inline in `<style>` tags
    - All JavaScript inline in `<script>` tags
-   - Clean, modern design (similar to example-tool)
+   - Clean, modern design following color palette
    - Mobile-responsive
-   - Include a "← Back to all tools" link to `../../`
-4. **Update README.md**: Add tool entry in "Available Tools" section using format:
-   ```markdown
-   - **Tool Name** (`tools/tool-name/`) - Brief description
-   ```
-5. **Regenerate index.html**: Run `python generate-index.py` or `node generate-index.js`
-6. **Commit changes**: Include all three files (tool HTML, README.md, index.html)
+   - Include a "← Back to all tools" link to `../../index.html`
+
+4. **Regenerate index.html**: Run `python generate-index.py`
+   - This automatically discovers all tools with README.md files
+   - No need to manually update the main README.md
+
+5. **Commit changes**: Include tool HTML, tool README.md, and regenerated index.html
 
 ## Design Guidelines
 
@@ -157,19 +177,36 @@ git commit -m "Add [tool-name] tool"
 git push origin main
 ```
 
-## README.md Format
-Keep the "Available Tools" section alphabetically sorted:
-```markdown
-## Available Tools
+## Tool README.md Format
 
-- **Calculator** (`tools/calculator/`) - Basic calculator for everyday math
-- **Color Picker** (`tools/color-picker/`) - Pick colors and copy hex codes
-- **Word Counter** (`tools/word-counter/`) - Count words, characters, and lines
+Each tool must have its own `README.md` file in its directory with this structure:
+
+```markdown
+# Tool Name
+
+## Metadata
+- **Category**: [Category like "Utility", "Calculator", "Text Tool", etc.]
+- **Created**: YYYY-MM-DD
+- **Updated**: YYYY-MM-DD
+
+## Description
+A brief description (1-2 sentences) that will appear on the main index page.
+
+## Features
+- Feature 1
+- Feature 2
+
+## Usage
+Instructions on how to use the tool.
 ```
+
+The generator script automatically scans the `tools/` directory and extracts this information.
 
 ## Notes
 - The index.html is auto-generated - NEVER edit it manually
-- Always regenerate index.html after updating README.md
+- Always regenerate index.html after adding or updating tools
+- Each tool needs its own README.md with metadata (category, created, updated)
+- The generator automatically discovers tools - no manual registration needed
 - Keep tools simple and focused on one task
 - Prioritize user experience and accessibility
 - Test thoroughly before committing

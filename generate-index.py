@@ -1,52 +1,95 @@
 #!/usr/bin/env python3
 """
-Generate index.html from README.md
+Generate index.html from README.md and individual tool READMEs
 Extracts tool information and creates a simple landing page
 """
 
-import re
+import os
 from datetime import datetime
 
-def parse_readme():
-    """Parse README.md and extract tool information"""
-    with open('README.md', 'r') as f:
+def parse_tool_readme(tool_path):
+    """Parse a tool's README.md and extract metadata and description"""
+    readme_path = os.path.join(tool_path, 'README.md')
+
+    if not os.path.exists(readme_path):
+        return None
+
+    with open(readme_path, 'r') as f:
         content = f.read()
 
-    # Extract tools section
-    tools = []
-    in_tools_section = False
-    current_tool = {}
-
+    tool_info = {}
     lines = content.split('\n')
-    for line in lines:
-        # Start of Available Tools section
-        if line.strip() == '## Available Tools':
-            in_tools_section = True
-            continue
 
-        # End of Available Tools section
-        if in_tools_section and line.startswith('## ') and 'Available Tools' not in line:
+    # Extract tool name (first h1)
+    for line in lines:
+        if line.startswith('# '):
+            tool_info['name'] = line.replace('# ', '').strip()
             break
 
-        if in_tools_section:
-            # Tool name (h3 heading)
-            if line.startswith('### '):
-                if current_tool:
-                    tools.append(current_tool)
-                current_tool = {'name': line.replace('### ', '').strip()}
+    # Extract metadata
+    in_metadata = False
+    for line in lines:
+        if line.strip() == '## Metadata':
+            in_metadata = True
+            continue
 
-            # Path
-            elif line.startswith('**Path**:'):
-                path = line.replace('**Path**:', '').strip().strip('`')
-                current_tool['path'] = path
+        if in_metadata:
+            if line.startswith('## '):
+                break
 
-            # Description
-            elif line.startswith('**Description**:'):
-                desc = line.replace('**Description**:', '').strip()
-                current_tool['description'] = desc
+            if '**Category**:' in line or '- **Category**:' in line:
+                tool_info['category'] = line.split(':', 1)[1].strip()
+            elif '**Created**:' in line or '- **Created**:' in line:
+                tool_info['created'] = line.split(':', 1)[1].strip()
+            elif '**Updated**:' in line or '- **Updated**:' in line:
+                tool_info['updated'] = line.split(':', 1)[1].strip()
 
-    if current_tool:
-        tools.append(current_tool)
+    # Extract description (first paragraph after ## Description)
+    in_description = False
+    description_lines = []
+    for line in lines:
+        if line.strip() == '## Description':
+            in_description = True
+            continue
+
+        if in_description:
+            if line.startswith('## '):
+                break
+            if line.strip():
+                description_lines.append(line.strip())
+            elif description_lines:  # Stop at first empty line after content
+                break
+
+    tool_info['description'] = ' '.join(description_lines)
+
+    return tool_info
+
+def find_tools():
+    """Find all tool directories and extract their information"""
+    tools = []
+    tools_dir = 'tools'
+
+    if not os.path.exists(tools_dir):
+        return tools
+
+    # Iterate through subdirectories in tools/
+    for item in sorted(os.listdir(tools_dir)):
+        tool_path = os.path.join(tools_dir, item)
+
+        # Skip if not a directory
+        if not os.path.isdir(tool_path):
+            continue
+
+        # Check if index.html exists
+        if not os.path.exists(os.path.join(tool_path, 'index.html')):
+            continue
+
+        # Parse the tool's README
+        tool_info = parse_tool_readme(tool_path)
+
+        if tool_info:
+            tool_info['path'] = f'{tools_dir}/{item}/'
+            tools.append(tool_info)
 
     return tools
 
@@ -58,9 +101,15 @@ def generate_html(tools):
         name = tool.get('name', 'Unnamed Tool')
         path = tool.get('path', '')
         description = tool.get('description', 'No description')
+        category = tool.get('category', 'Uncategorized')
+        updated = tool.get('updated', 'Unknown')
 
         tools_html += f'''
             <div class="tool-card">
+                <div class="tool-meta">
+                    <span class="category">{category}</span>
+                    <span class="updated">Updated: {updated}</span>
+                </div>
                 <h2>{name}</h2>
                 <p>{description}</p>
                 <a href="{path}" class="tool-link">Open Tool →</a>
@@ -128,6 +177,28 @@ def generate_html(tools):
         .tool-card:hover {{
             transform: translateY(-4px);
             box-shadow: 0 8px 12px rgba(0,0,0,0.15);
+        }}
+
+        .tool-meta {{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 0.85em;
+            color: #666;
+        }}
+
+        .category {{
+            background: #030222;
+            color: #F0ECDB;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-weight: 500;
+            font-size: 0.9em;
+        }}
+
+        .updated {{
+            color: #666;
         }}
 
         .tool-card h2 {{
@@ -202,9 +273,13 @@ def generate_html(tools):
     return html
 
 def main():
-    print("Parsing README.md...")
-    tools = parse_readme()
+    print("Scanning tools directory...")
+    tools = find_tools()
     print(f"Found {len(tools)} tool(s)")
+
+    if not tools:
+        print("Warning: No tools found with README.md files")
+        return
 
     print("Generating index.html...")
     html = generate_html(tools)
