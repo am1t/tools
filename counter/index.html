@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Counter - Simple Counting Tool</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #f9bf77;
+            background: #030222;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: #F0ECDB;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+        }
+
+        h1 {
+            color: #222;
+            margin-bottom: 10px;
+            font-size: 2em;
+        }
+
+        .subtitle {
+            color: #222;
+            margin-bottom: 30px;
+            font-size: 0.9em;
+        }
+
+        .counter-display {
+            font-size: 4em;
+            font-weight: bold;
+            color: #D64132;
+            margin: 30px 0;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 15px 30px;
+            font-size: 1.1em;
+            font-weight: 500;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #F0ECDB;
+            font-family: inherit;
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        .btn-increment {
+            background: #D64132;
+        }
+
+        .btn-increment:hover {
+            background: #b53527;
+        }
+
+        .btn-decrement {
+            background: #D64132;
+        }
+
+        .btn-decrement:hover {
+            background: #b53527;
+        }
+
+        .btn-reset {
+            background: #D64132;
+        }
+
+        .btn-reset:hover {
+            background: #b53527;
+        }
+
+        .info-box {
+            background: #e5e1d0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 30px;
+            text-align: left;
+        }
+
+        .info-box h3 {
+            color: #D64132;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .info-box p {
+            color: #222;
+            font-size: 0.9em;
+            margin-bottom: 8px;
+        }
+
+        .info-box code {
+            background: #d6d2c1;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85em;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #D64132;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 30px 20px;
+            }
+
+            h1 {
+                font-size: 1.5em;
+            }
+
+            .counter-display {
+                font-size: 3em;
+            }
+
+            button {
+                padding: 12px 24px;
+                font-size: 1em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Counter</h1>
+        <p class="subtitle">Simple counting tool with keyboard shortcuts</p>
+
+        <div class="counter-display" id="counter">0</div>
+
+        <div class="button-group">
+            <button class="btn-increment" onclick="increment()">+ Increment</button>
+            <button class="btn-decrement" onclick="decrement()">- Decrement</button>
+            <button class="btn-reset" onclick="reset()">Reset</button>
+        </div>
+
+        <div class="info-box">
+            <h3>About This Tool</h3>
+            <p><strong>Purpose:</strong> Count anything - people, items, repetitions, or keep score.</p>
+            <p><strong>Features:</strong></p>
+            <ul style="margin-left: 20px; color: #222; font-size: 0.9em;">
+                <li>Increment/decrement with buttons or keyboard</li>
+                <li>Keyboard shortcuts: ↑/+ to increment, ↓/- to decrement, R to reset</li>
+                <li>Your count is automatically saved</li>
+                <li>Works offline</li>
+                <li>No dependencies</li>
+            </ul>
+        </div>
+
+        <a href="/" class="back-link">← Back to Tools</a>
+    </div>
+
+    <script>
+        // State management
+        let count = 0;
+
+        // Load saved state from localStorage
+        function loadState() {
+            const saved = localStorage.getItem('counterTool');
+            if (saved !== null) {
+                count = parseInt(saved, 10);
+                updateDisplay();
+            }
+        }
+
+        // Save state to localStorage
+        function saveState() {
+            localStorage.setItem('counterTool', count.toString());
+        }
+
+        // Update the display
+        function updateDisplay() {
+            document.getElementById('counter').textContent = count;
+        }
+
+        // Counter operations
+        function increment() {
+            count++;
+            updateDisplay();
+            saveState();
+        }
+
+        function decrement() {
+            count--;
+            updateDisplay();
+            saveState();
+        }
+
+        function reset() {
+            count = 0;
+            updateDisplay();
+            saveState();
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowUp' || e.key === '+') {
+                increment();
+            } else if (e.key === 'ArrowDown' || e.key === '-') {
+                decrement();
+            } else if (e.key === 'r' || e.key === 'R') {
+                reset();
+            }
+        });
+
+        // Initialize
+        loadState();
+    </script>
+</body>
+</html>
