@@ -12,14 +12,17 @@ A collection of simple, self-contained web tools. Each tool is a single HTML fil
 
 ## Available Tools
 
+All tools are hosted at **[tools.amitgawande.com](https://tools.amitgawande.com)**
+
+Current tools:
+- **[Counter](https://tools.amitgawande.com/counter/)** - Simple counting tool with keyboard shortcuts
+- **[Untrack](https://tools.amitgawande.com/untrack/)** - Remove tracking parameters from URLs
+
 Tools are automatically discovered from the root directory. Each tool must have:
 - An `index.html` file (the tool itself)
 - A `README.md` file with metadata (category, created date, updated date) and description
 
-Each tool is a folder at the root level and accessible at `/<folder-name>/` (e.g., `/counter/`)
-
-Current tools:
-- **Counter** - `/counter/` - Simple counting tool with keyboard shortcuts
+Each tool is a folder at the root level and accessible at `/<folder-name>/`
 
 ## Adding New Tools
 
