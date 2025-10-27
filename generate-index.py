@@ -97,6 +97,14 @@ def find_tools():
 
     return tools
 
+def format_date(date_str):
+    """Convert YYYY-MM-DD to DD MMM YYYY format"""
+    try:
+        date_obj = datetime.strptime(date_str, '%Y-%m-%d')
+        return date_obj.strftime('%d %b %Y')
+    except (ValueError, TypeError):
+        return date_str
+
 def generate_html(tools):
     """Generate the index.html content"""
 
@@ -106,7 +114,7 @@ def generate_html(tools):
         path = tool.get('path', '')
         description = tool.get('description', 'No description')
         category = tool.get('category', 'Uncategorized')
-        updated = tool.get('updated', 'Unknown')
+        updated = format_date(tool.get('updated', 'Unknown'))
 
         tools_html += f'''
             <div class="tool-card">
@@ -266,7 +274,7 @@ def generate_html(tools):
         </div>
 
         <footer>
-            <p>Generated on {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</p>
+            <p>Generated on {datetime.now().strftime('%d %b %Y at %H:%M:%S')}</p>
             <p>©<a href="https://amitgawande.com">Amit Gawande</a></p>
         </footer>
     </div>
@@ -284,6 +292,9 @@ def main():
     if not tools:
         print("Warning: No tools found with README.md files")
         return
+
+    # Sort tools by updated date (newest first)
+    tools.sort(key=lambda t: t.get('updated', '1900-01-01'), reverse=True)
 
     print("Generating index.html...")
     html = generate_html(tools)

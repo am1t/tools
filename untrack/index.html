@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Untrack - Remove URL Tracking Parameters</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #030222;
+            color: #f9bf77;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            background: #F0ECDB;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            max-width: 700px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #222;
+            font-size: 2em;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .subtitle {
+            color: #222;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 0.9em;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: 'Courier New', monospace;
+            transition: border-color 0.3s ease;
+        }
+
+        input[type="text"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #D64132;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .output-section {
+            margin-top: 1.5rem;
+        }
+
+        .clean-url-container {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .clean-url {
+            flex: 1;
+            background: #fff;
+            padding: 0.75rem;
+            border: 2px solid #4CAF50;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            word-break: break-all;
+            font-size: 0.95rem;
+        }
+
+        .copy-btn {
+            background: #D64132;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .copy-btn:hover {
+            background: #b93529;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(214, 65, 50, 0.3);
+        }
+
+        .copy-btn:active {
+            transform: translateY(0);
+        }
+
+        .copy-btn.copied {
+            background: #4CAF50;
+        }
+
+        .removed-params {
+            margin-top: 1rem;
+        }
+
+        .removed-params h3 {
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+            color: #555;
+        }
+
+        .param-list {
+            background: #fff;
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 4px solid #D64132;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .param-item {
+            padding: 0.25rem 0;
+            color: #666;
+        }
+
+        .param-key {
+            color: #D64132;
+            font-weight: 600;
+        }
+
+        .no-params {
+            color: #999;
+            font-style: italic;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #999;
+            padding: 2rem;
+            font-style: italic;
+        }
+
+        .info-box {
+            background: #e5e1d0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 30px;
+            text-align: left;
+        }
+
+        .info-box h3 {
+            color: #D64132;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .info-box p {
+            color: #222;
+            font-size: 0.9em;
+            margin-bottom: 8px;
+        }
+
+        .info-box ul {
+            margin-left: 20px;
+            color: #222;
+            font-size: 0.9em;
+        }
+
+        .info-box code {
+            background: #d6d2c1;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85em;
+        }
+
+        .back-link {
+            display: block;
+            margin-top: 20px;
+            color: #D64132;
+            text-decoration: none;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .options {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #e5e1d0;
+            border-radius: 8px;
+        }
+
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .toggle-container label {
+            margin: 0;
+            font-weight: 500;
+            font-size: 0.95rem;
+            cursor: pointer;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 26px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: 0.3s;
+            border-radius: 26px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.3s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #D64132;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(24px);
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 30px 20px;
+            }
+
+            h1 {
+                font-size: 1.5em;
+            }
+
+            .clean-url-container {
+                flex-direction: column;
+            }
+
+            .copy-btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔗 Untrack</h1>
+        <p class="subtitle">Strip tracking parameters from URLs</p>
+
+        <label for="url-input">Paste URL</label>
+        <input
+            type="text"
+            id="url-input"
+            placeholder="https://m.example.com/page?utm_source=twitter&utm_campaign=spring_sale&ref=123"
+            autofocus
+        >
+
+        <div class="options">
+            <div class="toggle-container">
+                <label class="toggle-switch">
+                    <input type="checkbox" id="tracking-only">
+                    <span class="slider"></span>
+                </label>
+                <label for="tracking-only">Remove tracking parameters only</label>
+            </div>
+        </div>
+
+        <div class="output-section" id="output-section" style="display: none;">
+            <label>Clean URL</label>
+            <div class="clean-url-container">
+                <div class="clean-url" id="clean-url"></div>
+                <button class="copy-btn" id="copy-btn">Copy</button>
+            </div>
+
+            <div class="removed-params" id="removed-params-section">
+                <h3>Removed Parameters</h3>
+                <div class="param-list" id="param-list"></div>
+            </div>
+        </div>
+
+        <div class="empty-state" id="empty-state">
+            Enter a URL above to clean it
+        </div>
+
+        <div class="info-box">
+            <h3>About This Tool</h3>
+            <p><strong>Purpose:</strong> Remove tracking parameters from URLs to get clean, shareable links.</p>
+            <p><strong>Features:</strong></p>
+            <ul>
+                <li>Toggle between removing all params or just tracking ones</li>
+                <li>Automatically removes mobile prefixes (m., mobile., wap.)</li>
+                <li>Strips AMP subdomains and paths</li>
+                <li>Decodes URL-encoded characters for readability</li>
+                <li>One-click copy to clipboard</li>
+            </ul>
+        </div>
+
+        <a href="/" class="back-link">← Back to Tools</a>
+    </div>
+
+    <script>
+        const urlInput = document.getElementById('url-input');
+        const outputSection = document.getElementById('output-section');
+        const emptyState = document.getElementById('empty-state');
+        const cleanUrlDiv = document.getElementById('clean-url');
+        const copyBtn = document.getElementById('copy-btn');
+        const paramList = document.getElementById('param-list');
+        const removedParamsSection = document.getElementById('removed-params-section');
+        const trackingOnlyToggle = document.getElementById('tracking-only');
+
+        // Common tracking parameters to remove
+        const trackingParams = new Set([
+            // Google Analytics & Ads
+            'utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content',
+            'gclid', 'gclsrc', 'dclid',
+            // Facebook
+            'fbclid', 'fb_action_ids', 'fb_action_types', 'fb_source', 'fb_ref',
+            // Twitter
+            'twclid', 'twsrc',
+            // Microsoft/Bing
+            'msclkid',
+            // LinkedIn
+            'li_fat_id', 'lipi',
+            // TikTok
+            'ttclid',
+            // General tracking
+            'ref', 'referer', 'referrer', 'source', 'campaign',
+            // Email tracking
+            'mc_cid', 'mc_eid', 'mkt_tok',
+            // Other common trackers
+            '_hsenc', '_hsmi', 'hsCtaTracking',
+            'wickedid', 'yclid'
+        ]);
+
+        // Remove mobile/AMP versions from hostname
+        function cleanHostname(hostname) {
+            // Remove mobile prefixes (m., mobile., wap.)
+            let cleaned = hostname.replace(/^(m\.|mobile\.|wap\.)/, '');
+
+            // Remove AMP subdomain
+            cleaned = cleaned.replace(/^amp\./, '');
+
+            return cleaned;
+        }
+
+        // Decode URL-encoded characters
+        function decodeUrlComponents(url) {
+            try {
+                return decodeURIComponent(url);
+            } catch (e) {
+                return url;
+            }
+        }
+
+        // Clean URL and display results
+        function cleanUrl() {
+            const input = urlInput.value.trim();
+
+            if (!input) {
+                outputSection.style.display = 'none';
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            try {
+                const url = new URL(input);
+                const params = new URLSearchParams(url.search);
+                const paramEntries = Array.from(params.entries());
+                const trackingOnlyMode = trackingOnlyToggle.checked;
+
+                // Clean hostname (remove mobile/AMP)
+                url.hostname = cleanHostname(url.hostname);
+
+                // Remove pathname if it's an AMP path
+                if (url.pathname.includes('/amp/') || url.pathname.endsWith('/amp')) {
+                    url.pathname = url.pathname.replace(/\/amp\/?/, '/');
+                }
+
+                let removedParams = [];
+                let keptParams = [];
+
+                if (trackingOnlyMode) {
+                    // Only remove tracking parameters
+                    const newParams = new URLSearchParams();
+                    paramEntries.forEach(([key, value]) => {
+                        if (trackingParams.has(key.toLowerCase())) {
+                            removedParams.push([key, value]);
+                        } else {
+                            newParams.append(key, value);
+                            keptParams.push([key, value]);
+                        }
+                    });
+                    url.search = newParams.toString();
+                } else {
+                    // Remove all parameters
+                    removedParams = paramEntries;
+                    url.search = '';
+                }
+
+                // Get cleaned URL and decode it for better readability
+                let cleanedUrl = url.toString();
+                cleanedUrl = decodeUrlComponents(cleanedUrl);
+
+                // Display clean URL
+                cleanUrlDiv.textContent = cleanedUrl;
+
+                // Display removed parameters
+                if (removedParams.length > 0) {
+                    paramList.innerHTML = removedParams
+                        .map(([key, value]) =>
+                            `<div class="param-item"><span class="param-key">${escapeHtml(key)}</span> = ${escapeHtml(value)}</div>`
+                        )
+                        .join('');
+                    removedParamsSection.style.display = 'block';
+                } else {
+                    paramList.innerHTML = '<div class="no-params">No tracking parameters to remove</div>';
+                }
+
+                emptyState.style.display = 'none';
+                outputSection.style.display = 'block';
+
+            } catch (e) {
+                // Invalid URL
+                emptyState.textContent = 'Please enter a valid URL';
+                emptyState.style.display = 'block';
+                outputSection.style.display = 'none';
+            }
+        }
+
+        // Copy to clipboard
+        async function copyToClipboard() {
+            const cleanUrl = cleanUrlDiv.textContent;
+
+            try {
+                await navigator.clipboard.writeText(cleanUrl);
+
+                // Visual feedback
+                const originalText = copyBtn.textContent;
+                copyBtn.textContent = 'Copied!';
+                copyBtn.classList.add('copied');
+
+                setTimeout(() => {
+                    copyBtn.textContent = originalText;
+                    copyBtn.classList.remove('copied');
+                }, 2000);
+
+            } catch (err) {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = cleanUrl;
+                textArea.style.position = 'fixed';
+                textArea.style.left = '-999999px';
+                document.body.appendChild(textArea);
+                textArea.select();
+
+                try {
+                    document.execCommand('copy');
+                    copyBtn.textContent = 'Copied!';
+                    copyBtn.classList.add('copied');
+
+                    setTimeout(() => {
+                        copyBtn.textContent = 'Copy';
+                        copyBtn.classList.remove('copied');
+                    }, 2000);
+                } catch (err) {
+                    alert('Failed to copy to clipboard');
+                }
+
+                document.body.removeChild(textArea);
+            }
+        }
+
+        // Escape HTML to prevent XSS
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Event listeners
+        urlInput.addEventListener('input', cleanUrl);
+        copyBtn.addEventListener('click', copyToClipboard);
+        trackingOnlyToggle.addEventListener('change', cleanUrl);
+
+        // Auto-focus and check for initial value
+        cleanUrl();
+    </script>
+</body>
+</html>
