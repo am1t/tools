@@ -114,18 +114,18 @@ def generate_html(tools):
         path = tool.get('path', '')
         description = tool.get('description', 'No description')
         category = tool.get('category', 'Uncategorized')
-        updated = format_date(tool.get('updated', 'Unknown'))
+
+        # Truncate description to ~80 chars for compact display
+        short_desc = description[:80] + '...' if len(description) > 80 else description
 
         tools_html += f'''
-            <div class="tool-card">
-                <div class="tool-meta">
+            <a href="{path}" class="tool-pill">
+                <div class="tool-header">
+                    <h3>{name}</h3>
                     <span class="category">{category}</span>
-                    <span class="updated">Updated: {updated}</span>
                 </div>
-                <h2>{name}</h2>
-                <p>{description}</p>
-                <a href="{path}" class="tool-link">Open Tool →</a>
-            </div>
+                <p class="tool-desc">{short_desc}</p>
+            </a>
 '''
 
     html = f'''<!DOCTYPE html>
@@ -174,69 +174,54 @@ def generate_html(tools):
 
         .tools-grid {{
             display: grid;
-            gap: 20px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
             margin-top: 30px;
         }}
 
-        .tool-card {{
+        .tool-pill {{
             background: #F0ECDB;
             border-radius: 12px;
-            padding: 30px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 20px;
+            text-decoration: none;
+            display: block;
             transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }}
 
-        .tool-card:hover {{
-            transform: translateY(-4px);
-            box-shadow: 0 8px 12px rgba(0,0,0,0.15);
+        .tool-pill:hover {{
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
         }}
 
-        .tool-meta {{
+        .tool-header {{
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
-            font-size: 0.85em;
-            color: #666;
+            margin-bottom: 10px;
+        }}
+
+        .tool-pill h3 {{
+            color: #222;
+            font-size: 1.2em;
+            margin: 0;
         }}
 
         .category {{
-            background: #030222;
+            background: #D64132;
             color: #F0ECDB;
-            padding: 4px 12px;
+            padding: 3px 10px;
             border-radius: 12px;
+            font-size: 0.75em;
             font-weight: 500;
-            font-size: 0.9em;
+            white-space: nowrap;
         }}
 
-        .updated {{
+        .tool-desc {{
             color: #666;
-        }}
-
-        .tool-card h2 {{
-            color: #222;
-            margin-bottom: 10px;
-            font-size: 1.5em;
-        }}
-
-        .tool-card p {{
-            color: #222;
-            margin-bottom: 20px;
-        }}
-
-        .tool-link {{
-            display: inline-block;
-            background: #030222;
-            color: #F0ECDB;
-            padding: 10px 20px;
-            border-radius: 6px;
-            text-decoration: none;
-            font-weight: 500;
-            transition: background 0.2s;
-        }}
-
-        .tool-link:hover {{
-            background: #b53527;
+            font-size: 0.9em;
+            margin: 0;
+            line-height: 1.4;
         }}
 
         footer {{
@@ -252,13 +237,23 @@ def generate_html(tools):
             text-decoration: underline;
         }}
 
-        @media (max-width: 600px) {{
+        @media (max-width: 768px) {{
+            .tools-grid {{
+                grid-template-columns: repeat(2, 1fr);
+            }}
+        }}
+
+        @media (max-width: 500px) {{
             h1 {{
                 font-size: 2em;
             }}
 
-            .tool-card {{
-                padding: 20px;
+            .tools-grid {{
+                grid-template-columns: 1fr;
+            }}
+
+            .tool-pill {{
+                padding: 15px;
             }}
         }}
     </style>
@@ -274,7 +269,7 @@ def generate_html(tools):
         </div>
 
         <footer>
-            <p>Generated on {datetime.now().strftime('%d %b %Y at %H:%M:%S')}</p>
+            <p>Last updated on {datetime.now().strftime('%d %b %Y at %H:%M:%S')}</p>
             <p>©<a href="https://amitgawande.com">Amit Gawande</a></p>
         </footer>
     </div>

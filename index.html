@@ -44,69 +44,54 @@
 
         .tools-grid {
             display: grid;
-            gap: 20px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
             margin-top: 30px;
         }
 
-        .tool-card {
+        .tool-pill {
             background: #F0ECDB;
             border-radius: 12px;
-            padding: 30px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 20px;
+            text-decoration: none;
+            display: block;
             transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
-        .tool-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 12px rgba(0,0,0,0.15);
+        .tool-pill:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
         }
 
-        .tool-meta {
+        .tool-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
-            font-size: 0.85em;
-            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .tool-pill h3 {
+            color: #222;
+            font-size: 1.2em;
+            margin: 0;
         }
 
         .category {
-            background: #030222;
+            background: #D64132;
             color: #F0ECDB;
-            padding: 4px 12px;
+            padding: 3px 10px;
             border-radius: 12px;
+            font-size: 0.75em;
             font-weight: 500;
-            font-size: 0.9em;
+            white-space: nowrap;
         }
 
-        .updated {
+        .tool-desc {
             color: #666;
-        }
-
-        .tool-card h2 {
-            color: #222;
-            margin-bottom: 10px;
-            font-size: 1.5em;
-        }
-
-        .tool-card p {
-            color: #222;
-            margin-bottom: 20px;
-        }
-
-        .tool-link {
-            display: inline-block;
-            background: #030222;
-            color: #F0ECDB;
-            padding: 10px 20px;
-            border-radius: 6px;
-            text-decoration: none;
-            font-weight: 500;
-            transition: background 0.2s;
-        }
-
-        .tool-link:hover {
-            background: #b53527;
+            font-size: 0.9em;
+            margin: 0;
+            line-height: 1.4;
         }
 
         footer {
@@ -122,13 +107,23 @@
             text-decoration: underline;
         }
 
-        @media (max-width: 600px) {
+        @media (max-width: 768px) {
+            .tools-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 500px) {
             h1 {
                 font-size: 2em;
             }
 
-            .tool-card {
-                padding: 20px;
+            .tools-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tool-pill {
+                padding: 15px;
             }
         }
     </style>
@@ -141,30 +136,34 @@
         </header>
 
         <div class="tools-grid">
-            <div class="tool-card">
-                <div class="tool-meta">
-                    <span class="category">Utility</span>
-                    <span class="updated">Updated: 27 Oct 2025</span>
+            <a href="/markify/" class="tool-pill">
+                <div class="tool-header">
+                    <h3>Markify</h3>
+                    <span class="category">Text</span>
                 </div>
-                <h2>Untrack</h2>
-                <p>Remove tracking parameters from URLs to get clean, shareable links. Strips tracking params, decodes URLs, and removes mobile/AMP versions.</p>
-                <a href="/untrack/" class="tool-link">Open Tool →</a>
-            </div>
+                <p class="tool-desc">Convert HTML content to clean Markdown format with automatic HTML entity decodin...</p>
+            </a>
 
-            <div class="tool-card">
-                <div class="tool-meta">
+            <a href="/untrack/" class="tool-pill">
+                <div class="tool-header">
+                    <h3>Untrack</h3>
                     <span class="category">Utility</span>
-                    <span class="updated">Updated: 23 Oct 2025</span>
                 </div>
-                <h2>Counter</h2>
-                <p>A simple, clean counter tool with increment, decrement, and reset functionality. Perfect for counting anything - people, items, repetitions, or keeping score.</p>
-                <a href="/counter/" class="tool-link">Open Tool →</a>
-            </div>
+                <p class="tool-desc">Remove tracking parameters from URLs to get clean, shareable links. Strips track...</p>
+            </a>
+
+            <a href="/counter/" class="tool-pill">
+                <div class="tool-header">
+                    <h3>Counter</h3>
+                    <span class="category">Utility</span>
+                </div>
+                <p class="tool-desc">A simple, clean counter tool with increment, decrement, and reset functionality....</p>
+            </a>
 
         </div>
 
         <footer>
-            <p>Generated on 27 Oct 2025 at 14:03:13</p>
+            <p>Last updated on 12 Nov 2025 at 17:31:27</p>
             <p>©<a href="https://amitgawande.com">Amit Gawande</a></p>
         </footer>
     </div>

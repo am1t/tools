@@ -16,6 +16,7 @@ All tools are hosted at **[tools.amitgawande.com](https://tools.amitgawande.com)
 
 Current tools:
 - **[Counter](https://tools.amitgawande.com/counter/)** - Simple counting tool with keyboard shortcuts
+- **[Markify](https://tools.amitgawande.com/markify/)** - Convert HTML to clean Markdown format
 - **[Untrack](https://tools.amitgawande.com/untrack/)** - Remove tracking parameters from URLs
 
 Tools are automatically discovered from the root directory. Each tool must have:

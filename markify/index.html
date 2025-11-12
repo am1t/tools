@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markify - HTML to Markdown Converter</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #f9bf77;
+            background: #030222;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: #F0ECDB;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            max-width: 900px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #222;
+            margin-bottom: 10px;
+            font-size: 2em;
+            text-align: center;
+        }
+
+        .subtitle {
+            color: #222;
+            margin-bottom: 30px;
+            font-size: 0.9em;
+            text-align: center;
+        }
+
+        .conversion-area {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .input-section, .output-section {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            color: #222;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 0.95em;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 300px;
+            padding: 15px;
+            border: 2px solid #d6d2c1;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            resize: vertical;
+            background: white;
+            color: #222;
+            transition: border-color 0.2s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #D64132;
+        }
+
+        textarea::placeholder {
+            color: #999;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 12px 24px;
+            font-size: 1em;
+            font-weight: 500;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #F0ECDB;
+            font-family: inherit;
+            background: #D64132;
+        }
+
+        button:hover {
+            background: #b53527;
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: #666;
+        }
+
+        .btn-secondary:hover {
+            background: #555;
+        }
+
+        .status-message {
+            text-align: center;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 0.9em;
+            display: none;
+        }
+
+        .status-message.success {
+            background: #d4edda;
+            color: #155724;
+            display: block;
+        }
+
+        .status-message.error {
+            background: #f8d7da;
+            color: #721c24;
+            display: block;
+        }
+
+        .info-box {
+            background: #e5e1d0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .info-box h3 {
+            color: #D64132;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .info-box ul {
+            margin-left: 20px;
+            color: #222;
+            font-size: 0.9em;
+        }
+
+        .info-box li {
+            margin-bottom: 5px;
+        }
+
+        .back-link {
+            display: block;
+            margin-top: 20px;
+            color: #D64132;
+            text-decoration: none;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .conversion-area {
+                grid-template-columns: 1fr;
+            }
+
+            .container {
+                padding: 30px 20px;
+            }
+
+            h1 {
+                font-size: 1.5em;
+            }
+
+            textarea {
+                min-height: 200px;
+            }
+
+            button {
+                padding: 10px 20px;
+                font-size: 0.95em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📝 Markify</h1>
+        <p class="subtitle">Convert HTML to clean Markdown</p>
+
+        <div id="statusMessage" class="status-message"></div>
+
+        <div class="conversion-area">
+            <div class="input-section">
+                <label for="htmlInput">HTML Input</label>
+                <textarea
+                    id="htmlInput"
+                    placeholder="Paste your HTML content here..."></textarea>
+            </div>
+
+            <div class="output-section">
+                <label for="markdownOutput">Markdown Output</label>
+                <textarea
+                    id="markdownOutput"
+                    placeholder="Converted markdown will appear here..."
+                    readonly></textarea>
+            </div>
+        </div>
+
+        <div class="button-group">
+            <button onclick="copyToClipboard()">📋 Copy Markdown</button>
+            <button onclick="clearAll()" class="btn-secondary">🗑️ Clear</button>
+        </div>
+
+        <div class="info-box">
+            <h3>Supported HTML Elements</h3>
+            <ul>
+                <li><strong>Headers:</strong> h1-h6 → # ## ### etc.</li>
+                <li><strong>Text formatting:</strong> bold, italic, strikethrough</li>
+                <li><strong>Links:</strong> a → [text](url)</li>
+                <li><strong>Images:</strong> img → ![alt](src)</li>
+                <li><strong>Lists:</strong> ul, ol → - item or 1. item</li>
+                <li><strong>Code:</strong> pre, code blocks and inline code</li>
+                <li><strong>Quotes:</strong> blockquote → > text</li>
+                <li><strong>Tables:</strong> Basic markdown table format</li>
+                <li><strong>Horizontal rules:</strong> hr → ---</li>
+                <li><strong>HTML entities:</strong> Automatic decoding (&amp;, &lt;, &gt;, etc.)</li>
+            </ul>
+        </div>
+
+        <a href="/" class="back-link">← Back to Tools</a>
+    </div>
+
+    <script>
+        // HTML to Markdown converter
+        function htmlToMarkdown(html) {
+            // Create a temporary DOM element to parse HTML
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = html;
+
+            // Process the DOM tree and convert to markdown
+            return processNode(tempDiv).trim();
+        }
+
+        function processNode(node) {
+            let markdown = '';
+
+            // Handle different node types
+            if (node.nodeType === Node.TEXT_NODE) {
+                return decodeHTMLEntities(node.textContent);
+            }
+
+            if (node.nodeType === Node.ELEMENT_NODE) {
+                const tagName = node.tagName.toLowerCase();
+                const children = Array.from(node.childNodes);
+                const childContent = children.map(child => processNode(child)).join('');
+
+                switch (tagName) {
+                    case 'h1':
+                        return `# ${childContent}\n\n`;
+                    case 'h2':
+                        return `## ${childContent}\n\n`;
+                    case 'h3':
+                        return `### ${childContent}\n\n`;
+                    case 'h4':
+                        return `#### ${childContent}\n\n`;
+                    case 'h5':
+                        return `##### ${childContent}\n\n`;
+                    case 'h6':
+                        return `###### ${childContent}\n\n`;
+
+                    case 'p':
+                        return `${childContent}\n\n`;
+
+                    case 'br':
+                        return '\n';
+
+                    case 'strong':
+                    case 'b':
+                        return `**${childContent}**`;
+
+                    case 'em':
+                    case 'i':
+                        return `*${childContent}*`;
+
+                    case 'del':
+                    case 's':
+                    case 'strike':
+                        return `~~${childContent}~~`;
+
+                    case 'code':
+                        // Check if it's inside a pre tag
+                        if (node.parentElement && node.parentElement.tagName.toLowerCase() === 'pre') {
+                            return childContent;
+                        }
+                        return `\`${childContent}\``;
+
+                    case 'pre':
+                        // Extract language from class if present (e.g., class="language-javascript")
+                        const codeElement = node.querySelector('code');
+                        const content = codeElement ? processNode(codeElement) : childContent;
+                        let language = '';
+                        if (codeElement && codeElement.className) {
+                            const match = codeElement.className.match(/language-(\w+)/);
+                            language = match ? match[1] : '';
+                        }
+                        return `\`\`\`${language}\n${content}\n\`\`\`\n\n`;
+
+                    case 'a':
+                        const href = node.getAttribute('href') || '';
+                        return `[${childContent}](${href})`;
+
+                    case 'img':
+                        const src = node.getAttribute('src') || '';
+                        const alt = node.getAttribute('alt') || '';
+                        return `![${alt}](${src})`;
+
+                    case 'ul':
+                        return processListItems(node, false) + '\n';
+
+                    case 'ol':
+                        return processListItems(node, true) + '\n';
+
+                    case 'li':
+                        // Li items are processed by their parent ul/ol
+                        return childContent;
+
+                    case 'blockquote':
+                        const lines = childContent.split('\n').filter(line => line.trim());
+                        return lines.map(line => `> ${line}`).join('\n') + '\n\n';
+
+                    case 'hr':
+                        return '---\n\n';
+
+                    case 'table':
+                        return processTable(node) + '\n\n';
+
+                    case 'div':
+                    case 'span':
+                    case 'article':
+                    case 'section':
+                    case 'main':
+                        return childContent;
+
+                    default:
+                        return childContent;
+                }
+            }
+
+            return markdown;
+        }
+
+        function processListItems(listNode, ordered) {
+            const items = Array.from(listNode.children).filter(child =>
+                child.tagName.toLowerCase() === 'li'
+            );
+
+            return items.map((item, index) => {
+                const content = processNode(item).trim();
+                const prefix = ordered ? `${index + 1}. ` : '- ';
+                return prefix + content;
+            }).join('\n');
+        }
+
+        function processTable(tableNode) {
+            const rows = Array.from(tableNode.querySelectorAll('tr'));
+            if (rows.length === 0) return '';
+
+            let markdown = '';
+
+            rows.forEach((row, rowIndex) => {
+                const cells = Array.from(row.querySelectorAll('th, td'));
+                const cellContents = cells.map(cell => processNode(cell).trim());
+                markdown += '| ' + cellContents.join(' | ') + ' |\n';
+
+                // Add separator after header row
+                if (rowIndex === 0) {
+                    markdown += '| ' + cells.map(() => '---').join(' | ') + ' |\n';
+                }
+            });
+
+            return markdown;
+        }
+
+        function decodeHTMLEntities(text) {
+            const textarea = document.createElement('textarea');
+            textarea.innerHTML = text;
+            return textarea.value;
+        }
+
+        function cleanWhitespace(text) {
+            // Remove excessive blank lines (more than 2 consecutive newlines)
+            text = text.replace(/\n{3,}/g, '\n\n');
+
+            // Remove trailing spaces from lines
+            text = text.split('\n').map(line => line.trimEnd()).join('\n');
+
+            // Trim start and end
+            text = text.trim();
+
+            return text;
+        }
+
+        let debounceTimer;
+        function convertToMarkdown() {
+            const htmlInput = document.getElementById('htmlInput').value;
+
+            if (!htmlInput.trim()) {
+                document.getElementById('markdownOutput').value = '';
+                hideStatus();
+                return;
+            }
+
+            try {
+                let markdown = htmlToMarkdown(htmlInput);
+                markdown = cleanWhitespace(markdown);
+
+                document.getElementById('markdownOutput').value = markdown;
+                hideStatus();
+            } catch (error) {
+                showStatus('Error converting HTML: ' + error.message, 'error');
+            }
+        }
+
+        function debouncedConvert() {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(convertToMarkdown, 300);
+        }
+
+        function copyToClipboard() {
+            const markdownOutput = document.getElementById('markdownOutput');
+
+            if (!markdownOutput.value.trim()) {
+                showStatus('Nothing to copy. Enter HTML first.', 'error');
+                return;
+            }
+
+            markdownOutput.select();
+            document.execCommand('copy');
+
+            // Use modern clipboard API if available
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(markdownOutput.value).then(() => {
+                    showStatus('Markdown copied to clipboard!', 'success');
+                }).catch(() => {
+                    showStatus('Copied to clipboard!', 'success');
+                });
+            } else {
+                showStatus('Copied to clipboard!', 'success');
+            }
+        }
+
+        function clearAll() {
+            document.getElementById('htmlInput').value = '';
+            document.getElementById('markdownOutput').value = '';
+            hideStatus();
+        }
+
+        function showStatus(message, type) {
+            const statusEl = document.getElementById('statusMessage');
+            statusEl.textContent = message;
+            statusEl.className = `status-message ${type}`;
+
+            if (type === 'success') {
+                setTimeout(hideStatus, 3000);
+            }
+        }
+
+        function hideStatus() {
+            const statusEl = document.getElementById('statusMessage');
+            statusEl.className = 'status-message';
+        }
+
+        // Auto-convert on input
+        document.getElementById('htmlInput').addEventListener('input', debouncedConvert);
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            // Ctrl/Cmd + K to clear
+            if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                e.preventDefault();
+                clearAll();
+            }
+        });
+    </script>
+</body>
+</html>
