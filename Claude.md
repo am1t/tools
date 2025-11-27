@@ -27,9 +27,15 @@ This is a simple repository for building small, self-contained web tools. Each t
 
 When asked to create a new tool, follow these steps:
 
-1. **Create tool directory**: `[tool-name]/` at the root level
+1. **Choose a creative one-word name**:
+   - Tool names should be single, creative words (e.g., "counter", "wordly", "markify", "quotify", "untrack")
+   - Use kebab-case for folder names if compound (though single word is preferred)
+   - The name should be memorable and reflect the tool's purpose
+   - Examples: counter, wordly, markify, quotify, untrack
 
-2. **Create tool README**: `[tool-name]/README.md` with:
+2. **Create tool directory**: `[tool-name]/` at the root level
+
+3. **Create tool README**: `[tool-name]/README.md` with:
    ```markdown
    # Tool Name
 
@@ -49,19 +55,21 @@ When asked to create a new tool, follow these steps:
    How to use the tool.
    ```
 
-3. **Create single HTML file**: `[tool-name]/index.html`
+4. **Create single HTML file**: `[tool-name]/index.html`
    - Complete HTML5 document
    - All CSS inline in `<style>` tags
    - All JavaScript inline in `<script>` tags
    - Clean, modern design following color palette
    - Mobile-responsive
-   - Include a "← Back to all tools" link to `/` (root)
+   - Include a "← Back to Tools" link to `/` (root), centered at the bottom
+   - Title format: `<title>[ToolName] - Brief Description</title>`
+   - H1 should use the creative one-word name with an emoji
 
-4. **Regenerate index.html**: Run `python generate-index.py`
+5. **Regenerate index.html**: Run `python generate-index.py`
    - This automatically discovers all tools with README.md files
    - No need to manually update the main README.md
 
-5. **Commit changes**: Include tool HTML, tool README.md, and regenerated index.html
+6. **Commit changes**: Include tool HTML, tool README.md, and regenerated index.html
 
 ## Design Guidelines
 
