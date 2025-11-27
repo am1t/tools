@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quotify - Create Beautiful Quote Images</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #030222;
+            color: #f9bf77;
+            min-height: 100vh;
+            padding: 2rem 1rem;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+
+        .description {
+            text-align: center;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .controls {
+            background: #F0ECDB;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .controls h3 {
+            color: #222;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group:last-child {
+            margin-bottom: 0;
+        }
+
+        label {
+            display: block;
+            color: #222;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        textarea,
+        input[type="text"],
+        select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        textarea:focus,
+        input[type="text"]:focus,
+        select:focus {
+            outline: none;
+            border-color: #D64132;
+        }
+
+        .preview-section {
+            background: #F0ECDB;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .preview-section h3 {
+            color: #222;
+            margin-bottom: 1rem;
+            text-align: center;
+            font-size: 1.2rem;
+        }
+
+        .preview-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+        }
+
+        /* Modern framed card design */
+        .quote-frame {
+            padding: 2rem;
+            border-radius: 16px;
+            max-width: 500px;
+            width: 100%;
+        }
+
+        /* Frame colors that complement each background */
+        .quote-frame.frame-gradient1 { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .quote-frame.frame-gradient2 { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+        .quote-frame.frame-gradient3 { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+        .quote-frame.frame-gradient4 { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+        .quote-frame.frame-gradient5 { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+        .quote-frame.frame-gradient6 { background: linear-gradient(135deg, #30cfd0 0%, #330867 100%); }
+
+        .quote-card {
+            padding: 2.5rem 2rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            min-height: 220px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .quote-card.bg-dark {
+            background: #1a202c;
+        }
+
+        .quote-card.bg-light {
+            background: #ffffff;
+        }
+
+        .quote-text {
+            font-size: 1.35rem;
+            line-height: 1.7;
+            margin-bottom: 1.25rem;
+            font-style: normal;
+            position: relative;
+            padding-left: 1.25rem;
+            font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            font-weight: 300;
+            letter-spacing: 0.01em;
+        }
+
+        .quote-text::before {
+            content: '"';
+            position: absolute;
+            left: 0;
+            top: -0.2rem;
+            font-size: 2.5rem;
+            opacity: 0.3;
+            line-height: 1;
+            font-weight: 300;
+        }
+
+        .bg-dark .quote-text {
+            color: #f7fafc;
+        }
+
+        .bg-light .quote-text {
+            color: #1a202c;
+        }
+
+        .quote-author {
+            font-size: 0.95rem;
+            font-weight: 400;
+            text-align: right;
+            padding-left: 1.25rem;
+            opacity: 0.8;
+            font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            letter-spacing: 0.02em;
+        }
+
+        .quote-author::before {
+            content: '— ';
+        }
+
+        .bg-dark .quote-author {
+            color: #cbd5e0;
+        }
+
+        .bg-light .quote-author {
+            color: #4a5568;
+        }
+
+        .empty-state {
+            font-style: italic;
+            text-align: center;
+            opacity: 0.5;
+        }
+
+        button {
+            background: #D64132;
+            color: #fff;
+            border: none;
+            padding: 1rem 2rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-top: 1.5rem;
+        }
+
+        button:hover {
+            background: #b5351f;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .back-link {
+            display: block;
+            color: #f9bf77;
+            text-decoration: none;
+            margin-top: 2rem;
+            font-size: 1rem;
+            transition: opacity 0.3s;
+            text-align: center;
+        }
+
+        .back-link:hover {
+            opacity: 0.7;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .quote-frame {
+                padding: 1.5rem;
+            }
+
+            .quote-card {
+                padding: 2rem 1.5rem;
+                min-height: 200px;
+            }
+
+            .quote-text {
+                font-size: 1.2rem;
+            }
+
+            .quote-author {
+                font-size: 0.95rem;
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>💬 Quotify</h1>
+        <p class="description">Create beautiful quote images with customizable styling</p>
+
+        <div class="controls">
+            <h3>Customize Your Quote</h3>
+
+            <div class="form-group">
+                <label for="quoteText">Quote Text</label>
+                <textarea
+                    id="quoteText"
+                    placeholder="Enter your quote here..."
+                    maxlength="500"
+                >The only way to do great work is to love what you do.</textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="authorName">Author (optional)</label>
+                <input
+                    type="text"
+                    id="authorName"
+                    placeholder="e.g., Steve Jobs"
+                    value="Steve Jobs"
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="bgStyle">Style</label>
+                <select id="bgStyle">
+                    <option value="gradient1">Purple Gradient</option>
+                    <option value="gradient2">Pink Gradient</option>
+                    <option value="gradient3">Blue Gradient</option>
+                    <option value="gradient4">Green Gradient</option>
+                    <option value="gradient5" selected>Sunset Gradient</option>
+                    <option value="gradient6">Ocean Gradient</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="preview-section">
+            <h3>Preview</h3>
+            <div class="preview-container">
+                <div class="quote-frame frame-gradient5" id="quoteFrame">
+                    <div class="quote-card bg-dark" id="quoteCard">
+                        <div class="quote-text" id="previewQuote">The only way to do great work is to love what you do.</div>
+                        <div class="quote-author" id="previewAuthor">Steve Jobs</div>
+                    </div>
+                </div>
+            </div>
+            <button id="downloadBtn">📥 Download Image</button>
+        </div>
+
+        <a href="/" class="back-link">← Back to Tools</a>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script>
+        const quoteText = document.getElementById('quoteText');
+        const authorName = document.getElementById('authorName');
+        const bgStyle = document.getElementById('bgStyle');
+        const previewQuote = document.getElementById('previewQuote');
+        const previewAuthor = document.getElementById('previewAuthor');
+        const quoteFrame = document.getElementById('quoteFrame');
+        const quoteCard = document.getElementById('quoteCard');
+        const downloadBtn = document.getElementById('downloadBtn');
+
+        // Update preview on input
+        function updatePreview() {
+            const quote = quoteText.value.trim();
+            const author = authorName.value.trim();
+            const style = bgStyle.value;
+
+            if (quote) {
+                previewQuote.textContent = quote;
+                previewQuote.style.display = 'block';
+            } else {
+                previewQuote.innerHTML = '<span class="empty-state">Your quote will appear here...</span>';
+            }
+
+            if (author) {
+                previewAuthor.textContent = author;
+                previewAuthor.style.display = 'block';
+            } else {
+                previewAuthor.style.display = 'none';
+            }
+
+            // Update frame style
+            quoteFrame.className = 'quote-frame frame-' + style;
+        }
+
+        // Event listeners
+        quoteText.addEventListener('input', updatePreview);
+        authorName.addEventListener('input', updatePreview);
+        bgStyle.addEventListener('change', updatePreview);
+
+        // Download as image using html2canvas
+        downloadBtn.addEventListener('click', async function() {
+            const originalFrame = document.getElementById('quoteFrame');
+
+            try {
+                // Capture the element exactly as it appears with high quality
+                const canvas = await html2canvas(originalFrame, {
+                    backgroundColor: null,
+                    scale: 3, // Higher scale for better quality
+                    logging: false,
+                    useCORS: true
+                });
+
+                // Download
+                canvas.toBlob(function(blob) {
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'quote-' + Date.now() + '.png';
+                    a.click();
+                    URL.revokeObjectURL(url);
+                });
+            } catch (error) {
+                console.error('Export failed:', error);
+                alert('Failed to export image. Please try again.');
+            }
+        });
+
+        // Initialize preview
+        updatePreview();
+    </script>
+</body>
+</html>
