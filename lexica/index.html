@@ -1,0 +1,1546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lexica - Master Writing Vocabulary</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #030222 0%, #1a1a3e 100%);
+            color: #f9bf77;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 700px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2rem;
+        }
+
+        .subtitle {
+            text-align: center;
+            margin-bottom: 30px;
+            opacity: 0.8;
+            font-size: 0.95rem;
+        }
+
+        .card-container {
+            perspective: 1000px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            width: 100%;
+            height: 450px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+            cursor: pointer;
+        }
+
+        .card.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            background: #F0ECDB;
+            border-radius: 12px;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-front {
+            color: #222;
+        }
+
+        .card-back {
+            color: #222;
+            transform: rotateY(180deg);
+            overflow-y: auto;
+            justify-content: flex-start;
+            align-items: flex-start;
+        }
+
+        .word {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #D64132;
+            margin-bottom: 20px;
+        }
+
+        .flip-hint {
+            color: #666;
+            font-size: 0.9rem;
+            font-style: italic;
+        }
+
+        .card-back h2 {
+            color: #D64132;
+            margin-bottom: 15px;
+            font-size: 2rem;
+        }
+
+        .definition {
+            margin-bottom: 20px;
+            font-weight: 500;
+            line-height: 1.5;
+        }
+
+        .section {
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-weight: bold;
+            color: #D64132;
+            margin-bottom: 8px;
+        }
+
+        .synonym-item {
+            margin-bottom: 8px;
+            padding-left: 15px;
+        }
+
+        .synonym-word {
+            font-weight: 600;
+        }
+
+        .usage-tip {
+            background: rgba(214, 65, 50, 0.1);
+            padding: 12px;
+            border-radius: 8px;
+            border-left: 3px solid #D64132;
+        }
+
+        .example {
+            font-style: italic;
+            background: rgba(0, 0, 0, 0.05);
+            padding: 12px;
+            border-radius: 8px;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .btn {
+            background: #D64132;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            background: #b83428;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(214, 65, 50, 0.3);
+        }
+
+        .btn:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .progress {
+            text-align: center;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .back-link {
+            display: inline-block;
+            color: #f9bf77;
+            text-decoration: none;
+            margin-top: 20px;
+            padding: 10px 20px;
+            border: 2px solid #f9bf77;
+            border-radius: 8px;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .back-link:hover {
+            background: #f9bf77;
+            color: #030222;
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            .card {
+                height: 500px;
+            }
+
+            .card-face {
+                padding: 25px;
+            }
+
+            .word {
+                font-size: 2rem;
+            }
+
+            .card-back h2 {
+                font-size: 1.5rem;
+            }
+
+            .btn {
+                padding: 10px 18px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📚 Lexica</h1>
+        <p class="subtitle">Master precision in writing • Click cards to flip</p>
+
+        <div class="card-container">
+            <div class="card" id="flashcard">
+                <div class="card-face card-front">
+                    <div class="word" id="word-front"></div>
+                    <div class="flip-hint">Click to reveal details</div>
+                </div>
+                <div class="card-face card-back">
+                    <h2 id="word-back"></h2>
+                    <div class="definition" id="definition"></div>
+                    <div class="section">
+                        <div class="section-title">Synonyms & Nuances:</div>
+                        <div id="synonyms"></div>
+                    </div>
+                    <div class="section">
+                        <div class="section-title">Usage Tip:</div>
+                        <div class="usage-tip" id="usage"></div>
+                    </div>
+                    <div class="section">
+                        <div class="section-title">Example:</div>
+                        <div class="example" id="example"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="btn" id="prevBtn">← Previous</button>
+            <div class="progress" id="progress"></div>
+            <button class="btn" id="nextBtn">Next →</button>
+        </div>
+
+        <div style="text-align: center;">
+            <a href="../" class="back-link">← Back to all tools</a>
+        </div>
+    </div>
+
+    <script>
+        const wordDatabase = [
+            {
+                word: "articulate",
+                definition: "Express (an idea or feeling) fluently and coherently.",
+                synonyms: [
+                    { word: "express", note: "more general, neutral" },
+                    { word: "convey", note: "emphasizes transmission of meaning" },
+                    { word: "elucidate", note: "focuses on making clear" }
+                ],
+                usage: "Use 'articulate' when someone explains complex ideas clearly and eloquently, not just any basic statement.",
+                example: "She was able to articulate her concerns about the policy in a way that resonated with everyone."
+            },
+            {
+                word: "compelling",
+                definition: "Evoking interest, attention, or admiration in a powerfully irresistible way.",
+                synonyms: [
+                    { word: "convincing", note: "emphasizes logical persuasion" },
+                    { word: "persuasive", note: "focuses on ability to influence" },
+                    { word: "captivating", note: "emphasizes holding attention" }
+                ],
+                usage: "Choose 'compelling' for arguments or narratives that are impossible to ignore or resist.",
+                example: "The documentary presented a compelling case for renewable energy adoption."
+            },
+            {
+                word: "nuanced",
+                definition: "Characterized by subtle shades of meaning or expression.",
+                synonyms: [
+                    { word: "subtle", note: "more general, about delicacy" },
+                    { word: "complex", note: "emphasizes multiple layers" },
+                    { word: "refined", note: "suggests sophistication" }
+                ],
+                usage: "Use 'nuanced' to describe understanding or expression that recognizes complexity and avoids oversimplification.",
+                example: "His nuanced understanding of the conflict revealed years of careful study."
+            },
+            {
+                word: "pervasive",
+                definition: "Spreading widely throughout an area or group of people.",
+                synonyms: [
+                    { word: "widespread", note: "more neutral about positive/negative" },
+                    { word: "ubiquitous", note: "emphasizes being everywhere" },
+                    { word: "prevalent", note: "focuses on commonness" }
+                ],
+                usage: "Use 'pervasive' when describing something that penetrates deeply and affects everything, often subtly.",
+                example: "The pervasive influence of social media has transformed modern communication."
+            },
+            {
+                word: "scrutinize",
+                definition: "Examine or inspect closely and thoroughly.",
+                synonyms: [
+                    { word: "examine", note: "more neutral, less intense" },
+                    { word: "analyze", note: "emphasizes breaking down components" },
+                    { word: "inspect", note: "suggests checking for issues" }
+                ],
+                usage: "Choose 'scrutinize' when describing very careful, critical examination with attention to detail.",
+                example: "Investors will scrutinize the company's financial statements before making a decision."
+            },
+            {
+                word: "substantiate",
+                definition: "Provide evidence to support or prove the truth of.",
+                synonyms: [
+                    { word: "prove", note: "more definitive" },
+                    { word: "verify", note: "emphasizes checking accuracy" },
+                    { word: "corroborate", note: "focuses on supporting evidence" }
+                ],
+                usage: "Use 'substantiate' when evidence is needed to back up claims or assertions.",
+                example: "The researcher was able to substantiate her hypothesis with extensive data."
+            },
+            {
+                word: "illuminate",
+                definition: "Help to clarify or explain (a subject or matter).",
+                synonyms: [
+                    { word: "clarify", note: "more straightforward" },
+                    { word: "explain", note: "more general" },
+                    { word: "elucidate", note: "more formal, academic" }
+                ],
+                usage: "Choose 'illuminate' when describing how something brings understanding or insight, like light in darkness.",
+                example: "Her research illuminated previously unknown aspects of ancient civilizations."
+            },
+            {
+                word: "mitigate",
+                definition: "Make less severe, serious, or painful.",
+                synonyms: [
+                    { word: "reduce", note: "more general decrease" },
+                    { word: "alleviate", note: "emphasizes providing relief" },
+                    { word: "diminish", note: "focuses on making smaller" }
+                ],
+                usage: "Use 'mitigate' for reducing negative effects or harm, especially in formal or technical contexts.",
+                example: "The company implemented new policies to mitigate environmental damage."
+            },
+            {
+                word: "paradox",
+                definition: "A seemingly absurd or self-contradictory statement that may nonetheless be true.",
+                synonyms: [
+                    { word: "contradiction", note: "emphasizes opposition" },
+                    { word: "anomaly", note: "suggests something unusual" },
+                    { word: "irony", note: "focuses on opposite of expected" }
+                ],
+                usage: "Use 'paradox' for situations where two seemingly contradictory things are both true.",
+                example: "It's a paradox that increasing efficiency sometimes leads to more work."
+            },
+            {
+                word: "synthesize",
+                definition: "Combine a number of things into a coherent whole.",
+                synonyms: [
+                    { word: "combine", note: "more basic merging" },
+                    { word: "integrate", note: "emphasizes unified system" },
+                    { word: "amalgamate", note: "suggests blending" }
+                ],
+                usage: "Choose 'synthesize' when creating something new from multiple sources or elements.",
+                example: "The author synthesized ideas from multiple disciplines into a novel theory."
+            },
+            {
+                word: "tangible",
+                definition: "Clear and definite; real and able to be shown, touched, or experienced.",
+                synonyms: [
+                    { word: "concrete", note: "emphasizes solid reality" },
+                    { word: "substantial", note: "suggests considerable presence" },
+                    { word: "palpable", note: "emphasizes being felt" }
+                ],
+                usage: "Use 'tangible' to distinguish real, measurable things from abstract or theoretical ones.",
+                example: "The new training program produced tangible improvements in employee performance."
+            },
+            {
+                word: "endeavor",
+                definition: "Try hard to do or achieve something; an attempt to achieve a goal.",
+                synonyms: [
+                    { word: "attempt", note: "more neutral" },
+                    { word: "strive", note: "emphasizes effort" },
+                    { word: "undertaking", note: "suggests significant project" }
+                ],
+                usage: "Use 'endeavor' for serious, sustained efforts toward important goals.",
+                example: "Space exploration represents humanity's greatest scientific endeavor."
+            },
+            {
+                word: "juxtapose",
+                definition: "Place or deal with close together for contrasting effect.",
+                synonyms: [
+                    { word: "compare", note: "emphasizes similarities and differences" },
+                    { word: "contrast", note: "focuses on differences" },
+                    { word: "oppose", note: "suggests conflict" }
+                ],
+                usage: "Choose 'juxtapose' when deliberately placing things side-by-side to highlight their differences.",
+                example: "The film juxtaposes scenes of wealth and poverty to emphasize inequality."
+            },
+            {
+                word: "pragmatic",
+                definition: "Dealing with things sensibly and realistically based on practical considerations.",
+                synonyms: [
+                    { word: "practical", note: "more general usefulness" },
+                    { word: "realistic", note: "emphasizes what's achievable" },
+                    { word: "sensible", note: "suggests good judgment" }
+                ],
+                usage: "Use 'pragmatic' for approaches that prioritize what works over theory or ideals.",
+                example: "She took a pragmatic approach to problem-solving, focusing on implementable solutions."
+            },
+            {
+                word: "meticulous",
+                definition: "Showing great attention to detail; very careful and precise.",
+                synonyms: [
+                    { word: "careful", note: "more general" },
+                    { word: "thorough", note: "emphasizes completeness" },
+                    { word: "fastidious", note: "suggests being hard to please" }
+                ],
+                usage: "Choose 'meticulous' to describe extremely careful work where every small detail matters.",
+                example: "The architect's meticulous planning ensured no structural issues arose."
+            },
+            {
+                word: "profound",
+                definition: "Very great or intense; showing great knowledge or insight.",
+                synonyms: [
+                    { word: "deep", note: "more general" },
+                    { word: "intense", note: "emphasizes strength" },
+                    { word: "significant", note: "focuses on importance" }
+                ],
+                usage: "Use 'profound' for ideas, feelings, or impacts that are exceptionally deep or meaningful.",
+                example: "The book had a profound impact on how I understand human nature."
+            },
+            {
+                word: "ambiguous",
+                definition: "Open to more than one interpretation; having a double meaning.",
+                synonyms: [
+                    { word: "unclear", note: "more general lack of clarity" },
+                    { word: "vague", note: "suggests imprecision" },
+                    { word: "equivocal", note: "implies deliberate uncertainty" }
+                ],
+                usage: "Choose 'ambiguous' when something can legitimately be interpreted in multiple ways.",
+                example: "The contract's ambiguous language led to disputes between the parties."
+            },
+            {
+                word: "resilient",
+                definition: "Able to withstand or recover quickly from difficult conditions.",
+                synonyms: [
+                    { word: "strong", note: "more general" },
+                    { word: "robust", note: "emphasizes sturdy construction" },
+                    { word: "adaptable", note: "focuses on flexibility" }
+                ],
+                usage: "Use 'resilient' to describe ability to bounce back or endure hardship without breaking.",
+                example: "The community proved resilient in rebuilding after the natural disaster."
+            },
+            {
+                word: "cohesive",
+                definition: "Characterized by or causing cohesion; forming a united whole.",
+                synonyms: [
+                    { word: "unified", note: "emphasizes being one" },
+                    { word: "integrated", note: "suggests parts working together" },
+                    { word: "consistent", note: "focuses on harmony" }
+                ],
+                usage: "Choose 'cohesive' when parts stick together well to form a logical, unified whole.",
+                example: "A cohesive team works together seamlessly toward common goals."
+            },
+            {
+                word: "inherent",
+                definition: "Existing in something as a permanent, essential, or characteristic attribute.",
+                synonyms: [
+                    { word: "intrinsic", note: "emphasizes being essential" },
+                    { word: "innate", note: "suggests being natural" },
+                    { word: "fundamental", note: "focuses on being basic" }
+                ],
+                usage: "Use 'inherent' for qualities that are built-in and inseparable from something's nature.",
+                example: "Risk is inherent in any investment strategy."
+            },
+            {
+                word: "facilitate",
+                definition: "Make (an action or process) easy or easier.",
+                synonyms: [
+                    { word: "help", note: "more general assistance" },
+                    { word: "enable", note: "emphasizes making possible" },
+                    { word: "assist", note: "suggests support" }
+                ],
+                usage: "Choose 'facilitate' when describing making a process smoother or more efficient.",
+                example: "Technology can facilitate communication across vast distances."
+            },
+            {
+                word: "manifest",
+                definition: "Display or show (a quality or feeling) by one's acts or appearance; clearly apparent.",
+                synonyms: [
+                    { word: "show", note: "more general display" },
+                    { word: "demonstrate", note: "emphasizes proving" },
+                    { word: "reveal", note: "suggests uncovering" }
+                ],
+                usage: "Use 'manifest' when something internal becomes clearly visible or evident externally.",
+                example: "Her anxiety manifested itself in sleepless nights and constant worry."
+            },
+            {
+                word: "advocate",
+                definition: "Publicly recommend or support; a person who publicly supports a cause.",
+                synonyms: [
+                    { word: "support", note: "more general backing" },
+                    { word: "champion", note: "suggests active fighting for" },
+                    { word: "promote", note: "emphasizes spreading awareness" }
+                ],
+                usage: "Choose 'advocate' for actively speaking in favor of something, especially causes or policies.",
+                example: "She advocates for educational reform in underserved communities."
+            },
+            {
+                word: "elicit",
+                definition: "Evoke or draw out (a response, answer, or fact) from someone.",
+                synonyms: [
+                    { word: "draw out", note: "more informal" },
+                    { word: "extract", note: "suggests effort required" },
+                    { word: "evoke", note: "emphasizes calling forth" }
+                ],
+                usage: "Use 'elicit' when skillfully obtaining information or responses, often through questioning.",
+                example: "The interviewer's thoughtful questions elicited candid responses."
+            },
+            {
+                word: "bolster",
+                definition: "Support or strengthen; prop up.",
+                synonyms: [
+                    { word: "strengthen", note: "more general" },
+                    { word: "reinforce", note: "emphasizes adding support" },
+                    { word: "boost", note: "suggests increasing" }
+                ],
+                usage: "Choose 'bolster' when providing additional support to make something stronger or more confident.",
+                example: "The positive reviews bolstered confidence in the new product."
+            },
+            {
+                word: "discern",
+                definition: "Perceive or recognize (something) with difficulty by sight or with other senses.",
+                synonyms: [
+                    { word: "detect", note: "emphasizes discovery" },
+                    { word: "recognize", note: "suggests identifying" },
+                    { word: "distinguish", note: "focuses on telling apart" }
+                ],
+                usage: "Use 'discern' for perceiving subtle differences or truths that require careful observation.",
+                example: "It was difficult to discern her true intentions from her diplomatic responses."
+            },
+            {
+                word: "undermine",
+                definition: "Erode the base or foundation of; weaken or damage gradually.",
+                synonyms: [
+                    { word: "weaken", note: "more direct" },
+                    { word: "sabotage", note: "suggests deliberate harm" },
+                    { word: "subvert", note: "emphasizes overthrowing" }
+                ],
+                usage: "Choose 'undermine' when describing gradual weakening of support, confidence, or authority.",
+                example: "Constant criticism can undermine a person's self-confidence."
+            },
+            {
+                word: "evoke",
+                definition: "Bring or recall to the conscious mind; invoke.",
+                synonyms: [
+                    { word: "invoke", note: "more formal summoning" },
+                    { word: "recall", note: "emphasizes remembering" },
+                    { word: "summon", note: "suggests calling forth" }
+                ],
+                usage: "Use 'evoke' when something triggers memories, emotions, or mental images.",
+                example: "The old photograph evoked memories of childhood summers."
+            },
+            {
+                word: "implicit",
+                definition: "Implied though not plainly expressed; inherent.",
+                synonyms: [
+                    { word: "implied", note: "more straightforward" },
+                    { word: "tacit", note: "suggests unspoken understanding" },
+                    { word: "unspoken", note: "emphasizes not being said" }
+                ],
+                usage: "Choose 'implicit' for things understood without being directly stated.",
+                example: "There was an implicit understanding that everyone would contribute equally."
+            },
+            {
+                word: "perpetuate",
+                definition: "Make (something) continue indefinitely; cause to last.",
+                synonyms: [
+                    { word: "continue", note: "more general" },
+                    { word: "maintain", note: "emphasizes keeping alive" },
+                    { word: "sustain", note: "focuses on support" }
+                ],
+                usage: "Use 'perpetuate' when describing how something, often negative, is kept going over time.",
+                example: "Stereotypes perpetuate harmful misconceptions about different groups."
+            },
+            {
+                word: "exacerbate",
+                definition: "Make (a problem, bad situation, or negative feeling) worse.",
+                synonyms: [
+                    { word: "worsen", note: "more straightforward" },
+                    { word: "aggravate", note: "emphasizes making more serious" },
+                    { word: "intensify", note: "suggests increasing strength" }
+                ],
+                usage: "Choose 'exacerbate' for making already bad situations worse, especially in formal writing.",
+                example: "The drought exacerbated existing tensions over water resources."
+            },
+            {
+                word: "candid",
+                definition: "Truthful and straightforward; frank.",
+                synonyms: [
+                    { word: "honest", note: "more general truthfulness" },
+                    { word: "frank", note: "emphasizes directness" },
+                    { word: "forthright", note: "suggests bold openness" }
+                ],
+                usage: "Use 'candid' when describing refreshingly honest and direct communication.",
+                example: "I appreciate your candid feedback about my presentation."
+            },
+            {
+                word: "plausible",
+                definition: "(Of an argument or statement) seeming reasonable or probable.",
+                synonyms: [
+                    { word: "believable", note: "more general credibility" },
+                    { word: "credible", note: "emphasizes trustworthiness" },
+                    { word: "feasible", note: "focuses on possibility" }
+                ],
+                usage: "Choose 'plausible' when something could be true or workable, though not necessarily proven.",
+                example: "The theory offers a plausible explanation for the observed phenomenon."
+            },
+            {
+                word: "intricate",
+                definition: "Very complicated or detailed.",
+                synonyms: [
+                    { word: "complex", note: "more general" },
+                    { word: "elaborate", note: "emphasizes detail" },
+                    { word: "complicated", note: "suggests difficulty" }
+                ],
+                usage: "Use 'intricate' for things with many interrelated parts or fine details.",
+                example: "The watch mechanism was an intricate arrangement of tiny gears."
+            },
+            {
+                word: "alleviate",
+                definition: "Make (suffering, deficiency, or a problem) less severe.",
+                synonyms: [
+                    { word: "relieve", note: "more general easing" },
+                    { word: "ease", note: "emphasizes reducing difficulty" },
+                    { word: "lessen", note: "focuses on reduction" }
+                ],
+                usage: "Choose 'alleviate' for reducing pain, suffering, or problems, especially in formal contexts.",
+                example: "The medication helped alleviate her chronic pain."
+            },
+            {
+                word: "delineate",
+                definition: "Describe or portray (something) precisely; indicate the exact position of.",
+                synonyms: [
+                    { word: "describe", note: "more general" },
+                    { word: "outline", note: "emphasizes main features" },
+                    { word: "define", note: "focuses on boundaries" }
+                ],
+                usage: "Use 'delineate' when precisely defining boundaries or describing in detail.",
+                example: "The contract clearly delineates the responsibilities of each party."
+            },
+            {
+                word: "corroborate",
+                definition: "Confirm or give support to (a statement, theory, or finding).",
+                synonyms: [
+                    { word: "confirm", note: "more straightforward" },
+                    { word: "verify", note: "emphasizes checking truth" },
+                    { word: "validate", note: "suggests proving worth" }
+                ],
+                usage: "Choose 'corroborate' when independent evidence supports a claim or testimony.",
+                example: "Witness testimony corroborated the defendant's alibi."
+            },
+            {
+                word: "preclude",
+                definition: "Prevent from happening; make impossible.",
+                synonyms: [
+                    { word: "prevent", note: "more general stopping" },
+                    { word: "prohibit", note: "emphasizes forbidding" },
+                    { word: "rule out", note: "informal exclusion" }
+                ],
+                usage: "Use 'preclude' when something makes another thing impossible or prevents it from occurring.",
+                example: "His injury precluded him from participating in the tournament."
+            },
+            {
+                word: "reconcile",
+                definition: "Restore friendly relations between; make compatible or consistent.",
+                synonyms: [
+                    { word: "resolve", note: "emphasizes settling" },
+                    { word: "harmonize", note: "focuses on agreement" },
+                    { word: "settle", note: "more informal" }
+                ],
+                usage: "Choose 'reconcile' for bringing together conflicting ideas, people, or accounts.",
+                example: "She struggled to reconcile her career ambitions with family obligations."
+            },
+            {
+                word: "unprecedented",
+                definition: "Never done or known before; without previous instance.",
+                synonyms: [
+                    { word: "unparalleled", note: "emphasizes being unmatched" },
+                    { word: "novel", note: "focuses on newness" },
+                    { word: "extraordinary", note: "suggests remarkability" }
+                ],
+                usage: "Use 'unprecedented' for genuinely new situations without historical parallel.",
+                example: "The pandemic created unprecedented challenges for global healthcare."
+            },
+            {
+                word: "convoluted",
+                definition: "Extremely complex and difficult to follow.",
+                synonyms: [
+                    { word: "complicated", note: "more neutral" },
+                    { word: "complex", note: "doesn't imply confusion" },
+                    { word: "labyrinthine", note: "emphasizes maze-like quality" }
+                ],
+                usage: "Choose 'convoluted' when something is unnecessarily complicated in a confusing way.",
+                example: "The convoluted plot made the movie difficult to follow."
+            },
+            {
+                word: "catalyst",
+                definition: "A person or thing that precipitates an event or change.",
+                synonyms: [
+                    { word: "trigger", note: "more direct cause" },
+                    { word: "stimulus", note: "emphasizes prompting action" },
+                    { word: "impetus", note: "suggests driving force" }
+                ],
+                usage: "Use 'catalyst' for something that starts or accelerates change without being changed itself.",
+                example: "The protest served as a catalyst for legislative reform."
+            },
+            {
+                word: "ambivalent",
+                definition: "Having mixed feelings or contradictory ideas about something.",
+                synonyms: [
+                    { word: "uncertain", note: "more general doubt" },
+                    { word: "conflicted", note: "emphasizes internal struggle" },
+                    { word: "undecided", note: "focuses on lack of choice" }
+                ],
+                usage: "Choose 'ambivalent' when simultaneously holding opposing feelings about something.",
+                example: "She felt ambivalent about accepting the job offer in another city."
+            },
+            {
+                word: "pivotal",
+                definition: "Of crucial importance in relation to development or success.",
+                synonyms: [
+                    { word: "crucial", note: "more straightforward" },
+                    { word: "critical", note: "emphasizes importance" },
+                    { word: "decisive", note: "focuses on determining outcome" }
+                ],
+                usage: "Use 'pivotal' for moments or factors that determine which way things will go.",
+                example: "The election proved pivotal in shaping the country's future direction."
+            },
+            {
+                word: "ephemeral",
+                definition: "Lasting for a very short time.",
+                synonyms: [
+                    { word: "temporary", note: "more general brevity" },
+                    { word: "fleeting", note: "emphasizes quick passing" },
+                    { word: "transient", note: "suggests passing through" }
+                ],
+                usage: "Choose 'ephemeral' for beautiful or significant things that last only briefly.",
+                example: "Social media fame is often ephemeral, fading as quickly as it appears."
+            },
+            {
+                word: "exemplify",
+                definition: "Be a typical example of; serve as a desirable model.",
+                synonyms: [
+                    { word: "illustrate", note: "emphasizes showing" },
+                    { word: "demonstrate", note: "focuses on proving" },
+                    { word: "embody", note: "suggests perfect representation" }
+                ],
+                usage: "Use 'exemplify' when something perfectly represents or demonstrates a quality or concept.",
+                example: "Her dedication to students exemplifies what teaching should be."
+            },
+            {
+                word: "tenuous",
+                definition: "Very weak or slight; very slender or fine; insubstantial.",
+                synonyms: [
+                    { word: "weak", note: "more general" },
+                    { word: "flimsy", note: "suggests lack of substance" },
+                    { word: "fragile", note: "emphasizes easy to break" }
+                ],
+                usage: "Choose 'tenuous' for connections or arguments that are barely holding together.",
+                example: "The evidence supporting that theory is tenuous at best."
+            },
+            {
+                word: "empirical",
+                definition: "Based on observation or experience rather than theory or pure logic.",
+                synonyms: [
+                    { word: "experimental", note: "emphasizes testing" },
+                    { word: "practical", note: "focuses on real-world application" },
+                    { word: "observed", note: "more straightforward" }
+                ],
+                usage: "Use 'empirical' for knowledge or evidence derived from actual observation and data.",
+                example: "The study provides empirical evidence for the effectiveness of the treatment."
+            },
+            {
+                word: "viable",
+                definition: "Capable of working successfully; feasible.",
+                synonyms: [
+                    { word: "feasible", note: "emphasizes possibility" },
+                    { word: "workable", note: "focuses on practicality" },
+                    { word: "practical", note: "more general usefulness" }
+                ],
+                usage: "Choose 'viable' when assessing whether solutions or options can actually work.",
+                example: "Remote work has proven to be a viable alternative for many companies."
+            },
+            {
+                word: "proliferate",
+                definition: "Increase rapidly in numbers; multiply.",
+                synonyms: [
+                    { word: "multiply", note: "more mathematical" },
+                    { word: "spread", note: "emphasizes expanding area" },
+                    { word: "escalate", note: "suggests increasing intensity" }
+                ],
+                usage: "Use 'proliferate' for rapid, often uncontrolled growth or spread.",
+                example: "Misinformation can proliferate quickly on social media platforms."
+            },
+            {
+                word: "diminish",
+                definition: "Make or become less; reduce or be reduced.",
+                synonyms: [
+                    { word: "decrease", note: "more neutral" },
+                    { word: "reduce", note: "more active" },
+                    { word: "lessen", note: "more gradual" }
+                ],
+                usage: "Choose 'diminish' when something becomes smaller, weaker, or less important over time.",
+                example: "The scandal diminished public trust in the institution."
+            },
+            {
+                word: "arbitrary",
+                definition: "Based on random choice or personal whim, rather than reason or system.",
+                synonyms: [
+                    { word: "random", note: "emphasizes lack of pattern" },
+                    { word: "capricious", note: "suggests unpredictable changes" },
+                    { word: "subjective", note: "focuses on personal judgment" }
+                ],
+                usage: "Use 'arbitrary' for decisions or rules that seem unmotivated by logic or fairness.",
+                example: "The deadline seemed arbitrary and poorly justified."
+            },
+            {
+                word: "cognizant",
+                definition: "Having knowledge or being aware of.",
+                synonyms: [
+                    { word: "aware", note: "more common" },
+                    { word: "conscious", note: "emphasizes mental awareness" },
+                    { word: "mindful", note: "suggests active attention" }
+                ],
+                usage: "Choose 'cognizant' in formal writing to show sophisticated awareness or understanding.",
+                example: "Leaders must be cognizant of how their decisions affect all stakeholders."
+            },
+            {
+                word: "disseminate",
+                definition: "Spread or disperse (something, especially information) widely.",
+                synonyms: [
+                    { word: "spread", note: "more general" },
+                    { word: "distribute", note: "emphasizes giving out" },
+                    { word: "circulate", note: "suggests movement through" }
+                ],
+                usage: "Use 'disseminate' for deliberately spreading information widely, especially in formal contexts.",
+                example: "The organization works to disseminate accurate health information."
+            },
+            {
+                word: "fluctuate",
+                definition: "Rise and fall irregularly in number or amount.",
+                synonyms: [
+                    { word: "vary", note: "more general change" },
+                    { word: "oscillate", note: "emphasizes back-and-forth" },
+                    { word: "waver", note: "suggests uncertainty" }
+                ],
+                usage: "Choose 'fluctuate' for irregular variations over time, especially in measurements.",
+                example: "Stock prices fluctuate based on market conditions and investor sentiment."
+            },
+            {
+                word: "impetus",
+                definition: "The force or energy with which a body moves; something that makes a process happen.",
+                synonyms: [
+                    { word: "momentum", note: "emphasizes ongoing force" },
+                    { word: "stimulus", note: "focuses on prompting" },
+                    { word: "catalyst", note: "suggests triggering change" }
+                ],
+                usage: "Use 'impetus' for the driving force behind action or change.",
+                example: "The crisis provided the impetus for much-needed reform."
+            },
+            {
+                word: "analogous",
+                definition: "Comparable in certain respects; showing an analogy.",
+                synonyms: [
+                    { word: "similar", note: "more general" },
+                    { word: "comparable", note: "emphasizes ability to compare" },
+                    { word: "parallel", note: "suggests corresponding features" }
+                ],
+                usage: "Choose 'analogous' when drawing comparisons between different things with similar functions.",
+                example: "The heart is analogous to a pump in the circulatory system."
+            },
+            {
+                word: "inherently",
+                definition: "In a permanent, essential, or characteristic way.",
+                synonyms: [
+                    { word: "intrinsically", note: "emphasizes essential nature" },
+                    { word: "fundamentally", note: "focuses on basic level" },
+                    { word: "naturally", note: "more casual" }
+                ],
+                usage: "Use 'inherently' to emphasize that a quality is built into something's very nature.",
+                example: "Competition is not inherently bad; it can drive innovation."
+            },
+            {
+                word: "elucidate",
+                definition: "Make (something) clear; explain.",
+                synonyms: [
+                    { word: "clarify", note: "more common" },
+                    { word: "explain", note: "more general" },
+                    { word: "illuminate", note: "emphasizes shedding light" }
+                ],
+                usage: "Choose 'elucidate' in formal academic or professional writing for thorough explanation.",
+                example: "The professor took time to elucidate the complex theorem."
+            },
+            {
+                word: "disparate",
+                definition: "Essentially different in kind; not allowing comparison.",
+                synonyms: [
+                    { word: "different", note: "more general" },
+                    { word: "diverse", note: "emphasizes variety" },
+                    { word: "distinct", note: "focuses on separateness" }
+                ],
+                usage: "Use 'disparate' for things so different they're hard to compare or combine.",
+                example: "The team united disparate viewpoints into a cohesive strategy."
+            },
+            {
+                word: "comprehensive",
+                definition: "Complete; including all or nearly all elements or aspects.",
+                synonyms: [
+                    { word: "thorough", note: "emphasizes completeness" },
+                    { word: "extensive", note: "focuses on scope" },
+                    { word: "complete", note: "more straightforward" }
+                ],
+                usage: "Choose 'comprehensive' for coverage that leaves nothing important out.",
+                example: "The report provides a comprehensive analysis of market trends."
+            },
+            {
+                word: "integral",
+                definition: "Necessary to make a whole complete; essential or fundamental.",
+                synonyms: [
+                    { word: "essential", note: "emphasizes necessity" },
+                    { word: "vital", note: "suggests critical importance" },
+                    { word: "fundamental", note: "focuses on being basic" }
+                ],
+                usage: "Use 'integral' when something is an essential part that can't be removed.",
+                example: "Communication is integral to successful teamwork."
+            },
+            {
+                word: "aesthetic",
+                definition: "Concerned with beauty or the appreciation of beauty; a set of principles underlying the work of an artist.",
+                synonyms: [
+                    { word: "artistic", note: "emphasizes art" },
+                    { word: "beautiful", note: "more straightforward" },
+                    { word: "stylistic", note: "focuses on style" }
+                ],
+                usage: "Choose 'aesthetic' for discussing beauty, design principles, or visual appeal.",
+                example: "The building's aesthetic combines modern and traditional elements."
+            },
+            {
+                word: "conventional",
+                definition: "Based on or in accordance with what is generally done or believed.",
+                synonyms: [
+                    { word: "traditional", note: "emphasizes established practices" },
+                    { word: "standard", note: "focuses on norms" },
+                    { word: "orthodox", note: "suggests strict adherence" }
+                ],
+                usage: "Use 'conventional' for mainstream approaches, sometimes implying lack of innovation.",
+                example: "They chose a conventional approach rather than experimenting with new methods."
+            },
+            {
+                word: "proponent",
+                definition: "A person who advocates for a theory, proposal, or course of action.",
+                synonyms: [
+                    { word: "advocate", note: "emphasizes active support" },
+                    { word: "supporter", note: "more general backing" },
+                    { word: "champion", note: "suggests vigorous defense" }
+                ],
+                usage: "Choose 'proponent' for someone actively promoting an idea or position.",
+                example: "She is a leading proponent of renewable energy policy."
+            },
+            {
+                word: "constraint",
+                definition: "A limitation or restriction.",
+                synonyms: [
+                    { word: "limitation", note: "more general" },
+                    { word: "restriction", note: "emphasizes rules" },
+                    { word: "restraint", note: "suggests holding back" }
+                ],
+                usage: "Use 'constraint' for factors that limit options or freedom of action.",
+                example: "Budget constraints forced us to prioritize essential features."
+            },
+            {
+                word: "paradigm",
+                definition: "A typical example or pattern of something; a worldview underlying theories.",
+                synonyms: [
+                    { word: "model", note: "more concrete" },
+                    { word: "framework", note: "emphasizes structure" },
+                    { word: "pattern", note: "focuses on template" }
+                ],
+                usage: "Choose 'paradigm' for fundamental frameworks that shape how we understand things.",
+                example: "The discovery represented a paradigm shift in scientific thinking."
+            },
+            {
+                word: "criterion",
+                definition: "A principle or standard by which something may be judged or decided.",
+                synonyms: [
+                    { word: "standard", note: "more general measure" },
+                    { word: "benchmark", note: "emphasizes reference point" },
+                    { word: "measure", note: "focuses on assessment" }
+                ],
+                usage: "Use 'criterion' (plural: criteria) for specific standards used in evaluation.",
+                example: "Experience in the field is an important criterion for the position."
+            },
+            {
+                word: "consequential",
+                definition: "Following as a result or effect; important; significant.",
+                synonyms: [
+                    { word: "significant", note: "more common" },
+                    { word: "important", note: "more general" },
+                    { word: "momentous", note: "suggests great importance" }
+                ],
+                usage: "Choose 'consequential' for decisions or events with major results or implications.",
+                example: "The court's ruling was consequential for future cases."
+            },
+            {
+                word: "ubiquitous",
+                definition: "Present, appearing, or found everywhere.",
+                synonyms: [
+                    { word: "everywhere", note: "more informal" },
+                    { word: "pervasive", note: "emphasizes spread" },
+                    { word: "omnipresent", note: "more absolute" }
+                ],
+                usage: "Use 'ubiquitous' for things so common they seem to be everywhere you look.",
+                example: "Smartphones have become ubiquitous in modern society."
+            },
+            {
+                word: "mundane",
+                definition: "Lacking interest or excitement; dull; of this earthly world rather than spiritual.",
+                synonyms: [
+                    { word: "ordinary", note: "more neutral" },
+                    { word: "routine", note: "emphasizes regularity" },
+                    { word: "boring", note: "more informal" }
+                ],
+                usage: "Choose 'mundane' for everyday tasks or concerns that feel tedious or unexciting.",
+                example: "She handles the mundane details so I can focus on strategy."
+            },
+            {
+                word: "ostensibly",
+                definition: "Apparently or purportedly, but perhaps not actually.",
+                synonyms: [
+                    { word: "apparently", note: "more neutral" },
+                    { word: "supposedly", note: "suggests doubt" },
+                    { word: "seemingly", note: "emphasizes appearance" }
+                ],
+                usage: "Use 'ostensibly' when something appears to be true but you question the reality.",
+                example: "The meeting was ostensibly about budget review, but had a hidden agenda."
+            },
+            {
+                word: "quintessential",
+                definition: "Representing the most perfect or typical example of a quality or class.",
+                synonyms: [
+                    { word: "typical", note: "more straightforward" },
+                    { word: "archetypal", note: "emphasizes original pattern" },
+                    { word: "classic", note: "focuses on timelessness" }
+                ],
+                usage: "Choose 'quintessential' for the perfect embodiment of something's essential qualities.",
+                example: "He is the quintessential entrepreneur—creative, driven, and resilient."
+            },
+            {
+                word: "rudimentary",
+                definition: "Involving or limited to basic principles; elementary.",
+                synonyms: [
+                    { word: "basic", note: "more common" },
+                    { word: "elementary", note: "emphasizes simplicity" },
+                    { word: "primitive", note: "suggests undeveloped" }
+                ],
+                usage: "Use 'rudimentary' for knowledge or tools that are basic or undeveloped.",
+                example: "Even a rudimentary understanding of statistics would help interpret the data."
+            },
+            {
+                word: "spectrum",
+                definition: "A broad range of varied but related ideas or objects, the individual features of which tend to overlap.",
+                synonyms: [
+                    { word: "range", note: "more general" },
+                    { word: "continuum", note: "emphasizes gradual progression" },
+                    { word: "gamut", note: "suggests complete range" }
+                ],
+                usage: "Choose 'spectrum' for continuous ranges where elements blend into each other.",
+                example: "Political views fall along a spectrum from left to right."
+            },
+            {
+                word: "transcend",
+                definition: "Be or go beyond the range or limits of; surpass.",
+                synonyms: [
+                    { word: "surpass", note: "emphasizes exceeding" },
+                    { word: "exceed", note: "focuses on going beyond" },
+                    { word: "rise above", note: "more informal" }
+                ],
+                usage: "Use 'transcend' for going beyond normal limits or boundaries, often in inspiring ways.",
+                example: "Great art transcends cultural and temporal boundaries."
+            },
+            {
+                word: "negligible",
+                definition: "So small or unimportant as to be not worth considering; insignificant.",
+                synonyms: [
+                    { word: "insignificant", note: "more common" },
+                    { word: "minimal", note: "emphasizes smallness" },
+                    { word: "trivial", note: "suggests worthlessness" }
+                ],
+                usage: "Choose 'negligible' when something is too small to matter or have an effect.",
+                example: "The cost difference between the two options is negligible."
+            },
+            {
+                word: "volatile",
+                definition: "Liable to change rapidly and unpredictably, especially for the worse.",
+                synonyms: [
+                    { word: "unpredictable", note: "emphasizes uncertainty" },
+                    { word: "unstable", note: "focuses on lack of stability" },
+                    { word: "erratic", note: "suggests irregularity" }
+                ],
+                usage: "Use 'volatile' for situations or substances prone to sudden, dramatic change.",
+                example: "The political situation remained volatile after the disputed election."
+            },
+            {
+                word: "aspire",
+                definition: "Direct one's hopes or ambitions toward achieving something.",
+                synonyms: [
+                    { word: "aim", note: "more straightforward" },
+                    { word: "strive", note: "emphasizes effort" },
+                    { word: "seek", note: "focuses on searching" }
+                ],
+                usage: "Choose 'aspire' for ambitious goals and ideals you work toward.",
+                example: "She aspires to become a doctor and help underserved communities."
+            },
+            {
+                word: "foster",
+                definition: "Encourage or promote the development of (something, especially something regarded as good).",
+                synonyms: [
+                    { word: "encourage", note: "more general support" },
+                    { word: "promote", note: "emphasizes advancing" },
+                    { word: "nurture", note: "suggests caring development" }
+                ],
+                usage: "Use 'foster' for actively cultivating growth or development of positive things.",
+                example: "The program fosters creativity and critical thinking in students."
+            },
+            {
+                word: "leverage",
+                definition: "Use (something) to maximum advantage; the exertion of force by means of a lever.",
+                synonyms: [
+                    { word: "utilize", note: "more formal use" },
+                    { word: "exploit", note: "can have negative connotation" },
+                    { word: "capitalize on", note: "emphasizes taking advantage" }
+                ],
+                usage: "Choose 'leverage' when using resources or advantages strategically for greater effect.",
+                example: "The company leveraged its brand reputation to enter new markets."
+            },
+            {
+                word: "optimize",
+                definition: "Make the best or most effective use of (a situation, opportunity, or resource).",
+                synonyms: [
+                    { word: "maximize", note: "emphasizes getting most" },
+                    { word: "improve", note: "more general enhancement" },
+                    { word: "enhance", note: "focuses on increasing quality" }
+                ],
+                usage: "Use 'optimize' for making something as effective or functional as possible.",
+                example: "We need to optimize our workflow to increase productivity."
+            },
+            {
+                word: "pertinent",
+                definition: "Relevant or applicable to a particular matter; apposite.",
+                synonyms: [
+                    { word: "relevant", note: "more common" },
+                    { word: "applicable", note: "emphasizes being suitable" },
+                    { word: "germane", note: "formal, emphasizes connection" }
+                ],
+                usage: "Choose 'pertinent' for information directly related and important to the topic at hand.",
+                example: "Please include only pertinent details in your summary."
+            },
+            {
+                word: "transient",
+                definition: "Lasting only for a short time; impermanent.",
+                synonyms: [
+                    { word: "temporary", note: "more straightforward" },
+                    { word: "fleeting", note: "emphasizes brief duration" },
+                    { word: "ephemeral", note: "more poetic" }
+                ],
+                usage: "Use 'transient' for things that pass through quickly or don't last.",
+                example: "The feeling of euphoria was transient and faded within hours."
+            },
+            {
+                word: "mitigate",
+                definition: "Make (something bad) less severe, serious, or painful.",
+                synonyms: [
+                    { word: "alleviate", note: "emphasizes relief" },
+                    { word: "reduce", note: "more general decrease" },
+                    { word: "lessen", note: "focuses on making smaller" }
+                ],
+                usage: "Choose 'mitigate' in formal contexts for reducing harm or negative effects.",
+                example: "Proper planning can mitigate risks associated with the project."
+            },
+            {
+                word: "illuminate",
+                definition: "Make (something) visible or bright by shining light on it; help to clarify or explain.",
+                synonyms: [
+                    { word: "clarify", note: "more direct" },
+                    { word: "enlighten", note: "emphasizes bringing understanding" },
+                    { word: "explain", note: "more straightforward" }
+                ],
+                usage: "Use 'illuminate' metaphorically for shedding light on complex topics or making them clearer.",
+                example: "The study illuminates important connections between diet and health."
+            },
+            {
+                word: "reiterate",
+                definition: "Say something again or a number of times, typically for emphasis or clarity.",
+                synonyms: [
+                    { word: "repeat", note: "more straightforward" },
+                    { word: "restate", note: "emphasizes saying differently" },
+                    { word: "emphasize", note: "focuses on stressing importance" }
+                ],
+                usage: "Choose 'reiterate' when emphasizing a point by stating it again, often in formal contexts.",
+                example: "Let me reiterate the importance of meeting deadlines."
+            },
+            {
+                word: "assert",
+                definition: "State a fact or belief confidently and forcefully.",
+                synonyms: [
+                    { word: "declare", note: "emphasizes formal announcement" },
+                    { word: "state", note: "more neutral" },
+                    { word: "maintain", note: "suggests continued insistence" }
+                ],
+                usage: "Use 'assert' for confident statements, especially when establishing position or authority.",
+                example: "She asserted her right to speak at the meeting."
+            },
+            {
+                word: "undermine",
+                definition: "Lessen the effectiveness, power, or ability of, especially gradually or insidiously.",
+                synonyms: [
+                    { word: "weaken", note: "more direct" },
+                    { word: "sabotage", note: "suggests intentional harm" },
+                    { word: "erode", note: "emphasizes gradual wearing away" }
+                ],
+                usage: "Choose 'undermine' when describing gradual weakening of support or authority.",
+                example: "Constant negativity can undermine team morale."
+            },
+            {
+                word: "culminate",
+                definition: "Reach a climax or point of highest development.",
+                synonyms: [
+                    { word: "climax", note: "emphasizes peak" },
+                    { word: "conclude", note: "focuses on ending" },
+                    { word: "peak", note: "suggests highest point" }
+                ],
+                usage: "Use 'culminate' when a process reaches its highest point or final stage.",
+                example: "Years of research culminated in a groundbreaking discovery."
+            },
+            {
+                word: "substantiate",
+                definition: "Provide evidence to support or prove the truth of.",
+                synonyms: [
+                    { word: "verify", note: "emphasizes confirming truth" },
+                    { word: "validate", note: "focuses on proving validity" },
+                    { word: "corroborate", note: "suggests supporting evidence" }
+                ],
+                usage: "Choose 'substantiate' when providing proof or evidence for claims.",
+                example: "The witness was unable to substantiate her allegations."
+            },
+            {
+                word: "acknowledge",
+                definition: "Accept or admit the existence or truth of; recognize the importance or quality of.",
+                synonyms: [
+                    { word: "recognize", note: "emphasizes awareness" },
+                    { word: "admit", note: "suggests reluctant acceptance" },
+                    { word: "accept", note: "focuses on agreeing" }
+                ],
+                usage: "Use 'acknowledge' for formally recognizing facts, contributions, or receipt of something.",
+                example: "We must acknowledge the limitations of our current approach."
+            },
+            {
+                word: "elucidate",
+                definition: "Make (something) clear; explain.",
+                synonyms: [
+                    { word: "clarify", note: "more common" },
+                    { word: "explain", note: "more general" },
+                    { word: "illuminate", note: "emphasizes bringing light" }
+                ],
+                usage: "Choose 'elucidate' in formal writing when providing thorough, clear explanation.",
+                example: "The professor took time to elucidate the difficult concept."
+            },
+            {
+                word: "scrutinize",
+                definition: "Examine or inspect closely and thoroughly.",
+                synonyms: [
+                    { word: "examine", note: "more neutral" },
+                    { word: "inspect", note: "suggests checking" },
+                    { word: "analyze", note: "emphasizes breaking down" }
+                ],
+                usage: "Use 'scrutinize' for very close, critical examination with attention to detail.",
+                example: "The committee will scrutinize all proposals before making a decision."
+            },
+            {
+                word: "eradicate",
+                definition: "Destroy completely; put an end to.",
+                synonyms: [
+                    { word: "eliminate", note: "more common" },
+                    { word: "destroy", note: "emphasizes damage" },
+                    { word: "abolish", note: "focuses on ending formally" }
+                ],
+                usage: "Choose 'eradicate' for complete removal or destruction, especially of diseases or problems.",
+                example: "Global efforts aim to eradicate malaria by 2030."
+            },
+            {
+                word: "navigate",
+                definition: "Plan and direct the course of a journey or passage; find one's way through.",
+                synonyms: [
+                    { word: "steer", note: "emphasizes direction" },
+                    { word: "guide", note: "focuses on leading" },
+                    { word: "maneuver", note: "suggests skillful movement" }
+                ],
+                usage: "Use 'navigate' metaphorically for dealing with complex situations or systems.",
+                example: "New employees must learn to navigate the company's bureaucracy."
+            },
+            {
+                word: "concise",
+                definition: "Giving a lot of information clearly and in a few words; brief but comprehensive.",
+                synonyms: [
+                    { word: "brief", note: "emphasizes shortness" },
+                    { word: "succinct", note: "suggests elegant brevity" },
+                    { word: "terse", note: "can seem abrupt" }
+                ],
+                usage: "Choose 'concise' for communication that is short yet includes all necessary information.",
+                example: "Please provide a concise summary of the main findings."
+            },
+            {
+                word: "imperative",
+                definition: "Of vital importance; crucial; giving an authoritative command.",
+                synonyms: [
+                    { word: "essential", note: "more common" },
+                    { word: "crucial", note: "emphasizes decisive importance" },
+                    { word: "vital", note: "suggests life-or-death importance" }
+                ],
+                usage: "Use 'imperative' for things that are absolutely necessary or commands that must be followed.",
+                example: "It is imperative that we act now to prevent further damage."
+            },
+            {
+                word: "ambiguous",
+                definition: "Open to more than one interpretation; not having one obvious meaning.",
+                synonyms: [
+                    { word: "unclear", note: "more straightforward" },
+                    { word: "vague", note: "suggests lack of precision" },
+                    { word: "equivocal", note: "implies deliberate uncertainty" }
+                ],
+                usage: "Choose 'ambiguous' when language or situations can legitimately be interpreted multiple ways.",
+                example: "The politician's ambiguous statement left voters uncertain about his position."
+            },
+            {
+                word: "stringent",
+                definition: "(Of regulations, requirements, or conditions) strict, precise, and exacting.",
+                synonyms: [
+                    { word: "strict", note: "more common" },
+                    { word: "rigorous", note: "emphasizes thoroughness" },
+                    { word: "severe", note: "suggests harshness" }
+                ],
+                usage: "Use 'stringent' for very strict rules or standards that are rigorously enforced.",
+                example: "The loan requires stringent credit requirements to qualify."
+            },
+            {
+                word: "exacerbate",
+                definition: "Make (a problem, bad situation, or negative feeling) worse.",
+                synonyms: [
+                    { word: "worsen", note: "more straightforward" },
+                    { word: "aggravate", note: "emphasizes making more serious" },
+                    { word: "intensify", note: "focuses on increasing" }
+                ],
+                usage: "Choose 'exacerbate' for making already difficult situations worse, especially in formal contexts.",
+                example: "Poor communication exacerbated tensions between the departments."
+            },
+            {
+                word: "convey",
+                definition: "Transport or carry to a place; communicate (an idea, impression, or feeling).",
+                synonyms: [
+                    { word: "communicate", note: "more general" },
+                    { word: "express", note: "emphasizes making known" },
+                    { word: "transmit", note: "focuses on passing along" }
+                ],
+                usage: "Use 'convey' for successfully communicating meaning, especially subtle or complex ideas.",
+                example: "Her tone conveyed disappointment even though her words were polite."
+            },
+            {
+                word: "encompass",
+                definition: "Surround and have or hold within; include comprehensively.",
+                synonyms: [
+                    { word: "include", note: "more straightforward" },
+                    { word: "comprise", note: "emphasizes components" },
+                    { word: "embrace", note: "suggests welcoming inclusion" }
+                ],
+                usage: "Choose 'encompass' when something includes or covers a wide range of elements.",
+                example: "The curriculum encompasses history, literature, and philosophy."
+            },
+            {
+                word: "endeavor",
+                definition: "Try hard to do or achieve something; a serious determined effort.",
+                synonyms: [
+                    { word: "attempt", note: "more neutral" },
+                    { word: "strive", note: "emphasizes effort" },
+                    { word: "pursue", note: "focuses on going after" }
+                ],
+                usage: "Use 'endeavor' for serious, sustained attempts at significant goals.",
+                example: "We will endeavor to complete the project ahead of schedule."
+            },
+            {
+                word: "allocate",
+                definition: "Distribute (resources or duties) for a particular purpose.",
+                synonyms: [
+                    { word: "assign", note: "more straightforward" },
+                    { word: "distribute", note: "emphasizes spreading out" },
+                    { word: "designate", note: "focuses on setting aside" }
+                ],
+                usage: "Choose 'allocate' for deliberately distributing limited resources according to priorities.",
+                example: "The committee will allocate funds to the most promising projects."
+            },
+            {
+                word: "infer",
+                definition: "Deduce or conclude (information) from evidence and reasoning rather than explicit statements.",
+                synonyms: [
+                    { word: "deduce", note: "emphasizes logical reasoning" },
+                    { word: "conclude", note: "focuses on final judgment" },
+                    { word: "gather", note: "more informal" }
+                ],
+                usage: "Use 'infer' when drawing conclusions from implicit information or clues.",
+                example: "From her silence, I inferred that she disagreed with the decision."
+            },
+            {
+                word: "prevail",
+                definition: "Prove more powerful or superior; be widespread or current in a particular area.",
+                synonyms: [
+                    { word: "triumph", note: "emphasizes victory" },
+                    { word: "succeed", note: "focuses on achieving goal" },
+                    { word: "dominate", note: "suggests control" }
+                ],
+                usage: "Choose 'prevail' for winning out despite opposition or being widespread.",
+                example: "Common sense eventually prevailed over emotional reactions."
+            },
+            {
+                word: "retain",
+                definition: "Continue to have (something); keep possession of; absorb and continue to hold.",
+                synonyms: [
+                    { word: "keep", note: "more straightforward" },
+                    { word: "maintain", note: "emphasizes continuation" },
+                    { word: "preserve", note: "focuses on protecting" }
+                ],
+                usage: "Use 'retain' for keeping something over time, especially against forces of loss.",
+                example: "The organization struggles to retain talented employees."
+            }
+        ];
+
+        let sessionCards = [];
+        let currentIndex = 0;
+
+        // Initialize session with random cards
+        function initializeSession() {
+            const numCards = Math.floor(Math.random() * 6) + 5; // 5-10 cards
+            const shuffled = [...wordDatabase].sort(() => Math.random() - 0.5);
+            sessionCards = shuffled.slice(0, numCards);
+            currentIndex = 0;
+            displayCard();
+            updateControls();
+        }
+
+        function displayCard() {
+            const card = sessionCards[currentIndex];
+            const flashcard = document.getElementById('flashcard');
+
+            // Reset flip
+            flashcard.classList.remove('flipped');
+
+            // Update front
+            document.getElementById('word-front').textContent = card.word;
+
+            // Update back
+            document.getElementById('word-back').textContent = card.word;
+            document.getElementById('definition').textContent = card.definition;
+
+            // Update synonyms
+            const synonymsHtml = card.synonyms.map(s =>
+                `<div class="synonym-item"><span class="synonym-word">${s.word}</span> - ${s.note}</div>`
+            ).join('');
+            document.getElementById('synonyms').innerHTML = synonymsHtml;
+
+            document.getElementById('usage').textContent = card.usage;
+            document.getElementById('example').textContent = card.example;
+        }
+
+        function updateControls() {
+            document.getElementById('progress').textContent =
+                `${currentIndex + 1} / ${sessionCards.length}`;
+
+            document.getElementById('prevBtn').disabled = currentIndex === 0;
+            document.getElementById('nextBtn').disabled = currentIndex === sessionCards.length - 1;
+        }
+
+        // Event listeners
+        document.getElementById('flashcard').addEventListener('click', function() {
+            this.classList.toggle('flipped');
+        });
+
+        document.getElementById('prevBtn').addEventListener('click', function() {
+            if (currentIndex > 0) {
+                currentIndex--;
+                displayCard();
+                updateControls();
+            }
+        });
+
+        document.getElementById('nextBtn').addEventListener('click', function() {
+            if (currentIndex < sessionCards.length - 1) {
+                currentIndex++;
+                displayCard();
+                updateControls();
+            }
+        });
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowLeft') {
+                document.getElementById('prevBtn').click();
+            } else if (e.key === 'ArrowRight') {
+                document.getElementById('nextBtn').click();
+            } else if (e.key === ' ') {
+                e.preventDefault();
+                document.getElementById('flashcard').classList.toggle('flipped');
+            }
+        });
+
+        // Initialize on load
+        initializeSession();
+    </script>
+</body>
+</html>
